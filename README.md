@@ -5,7 +5,7 @@
 ## Team members
 - Robert Kadak `RobertKadak`
 - Daniel Zapryanov `wa75on`
-- Harald Paquay
+- Harald Paquay `0HaPa`
 - Juss Roderick Janson `JRoderickJ`
 
 ## Description
