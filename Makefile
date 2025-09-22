@@ -1,7 +1,7 @@
-CC=gcc
-CFLAGS=-Wall -Wextra -Werror -std=c11
-SRC=$(wildcard src/*.c)
-OBJ=$(SRC:.c=.o)
+CC=g++
+CFLAGS=-Wall -Wextra -Werror -std=c++11
+SRC=$(wildcard src/*.cpp)
+OBJ=$(SRC:.cpp=.o)
 BIN=app
 
 .PHONY: all run test clean
