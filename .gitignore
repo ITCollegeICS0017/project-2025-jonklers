@@ -1,6 +1,10 @@
 # Custom
 build/
 
+# Editor settings
+.vscode
+.idea
+
 # Prerequisites
 *.d
 
