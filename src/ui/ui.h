@@ -21,7 +21,7 @@ class Menu {
     vector<MenuItem> items;
     vector<int> keys;
 
-    Menu(const vector<MenuItem> items, const vector<int> keys, void (*exitAction)()) : items(items), keys(keys), exitAction(exitAction) {}
+    Menu(const vector<MenuItem> items, const vector<int> keys, void (*exitAction)()) : items(items), keys(keys) {}
 
     void runHorizontal() {}
     void runVertical() {}
