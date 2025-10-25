@@ -1,9 +1,9 @@
 #pragma once
 #include "Listing.h"
 
-class Auction: Listing {
+class Auction: public Listing {
 public:
-    Auction(std::string listing_id, std::string owner_id, std::time_t expiry, std::string last_bidder_id);
+    Auction(std::string listing_id, double price, std::string owner_id, std::time_t expiry, std::string last_bidder_id);
 
     void bid();
 private:

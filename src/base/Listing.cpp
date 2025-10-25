@@ -1,7 +1,7 @@
 #include "Listing.h"
 
-Listing::Listing(std::string listing_id, std::string owner_id, std::time_t expiry)
-    : listing_id(listing_id), owner_id(owner_id), expiry(expiry) {}
+Listing::Listing(std::string listing_id, double price, std::string owner_id, std::time_t expiry)
+    : listing_id(listing_id), price(price), owner_id(owner_id), expiry(expiry) {}
 
 void Listing::set_product(std::string name, std::string description, Category category) {
    this->product.name = name; 
