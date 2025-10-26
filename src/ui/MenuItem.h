@@ -8,9 +8,11 @@ class MenuItem {
 public:
     std::string label;
     std::vector<MenuItem> items;
-    void (*action)();
+    void (*action)() = nullptr;
 
-    MenuItem(const std::string label, const std::vector<MenuItem>* items, void (*action)());
+    MenuItem(std::string label, void (*action)());
+    MenuItem(std::string label, std::vector<MenuItem> items);
+    MenuItem(std::string label, std::vector<MenuItem> items, void (*action)());
 
     std::string toString() const;
 };
