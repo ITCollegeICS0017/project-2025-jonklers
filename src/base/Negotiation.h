@@ -9,9 +9,9 @@ struct Offer {
     std::string neg_amount;
 };
 
-class Negotiation: Listing {
+class Negotiation: public Listing {
 public:
-    Negotiation(std::string listing_id, std::string owner_id, std::time_t expiry, std::vector<Offer> offers);
+    Negotiation(std::string listing_id, double price, std::string owner_id, std::time_t expiry, std::vector<Offer> offers);
 
     std::shared_ptr<Offer> make_offer();
 private:
