@@ -7,7 +7,7 @@
 
 Menu::Menu(std::vector<MenuItem> items, bool horizontal, std::vector<int> keys) : items(items), keys(keys), horizontal(horizontal) {}
 
-void Menu::displayHorizontal() const {
+void Menu::displayHorizontal() {
     for (int level = 0; level <= getLevel(); level++) {
         displayLevelHorizontal(level);
         std::cout << "\n";
@@ -61,18 +61,20 @@ void Menu::handleInput() {
     }
 }
 
-void Menu::display() const {
+void Menu::display() {
+    std::cout << headerMessage;
     if (horizontal) {
         displayHorizontal();
     } else {
         displayVertical();
     }
+    std::cout << footerMessage;
 }
 
-void Menu::displayVertical() const {
+void Menu::displayVertical() {
     displayLevelVertical(getLevel());
 }
-void Menu::displayLevelHorizontal(int level) const {
+void Menu::displayLevelHorizontal(int level) {
     for (auto &item : getLevelItems(level)) {
         if (item.toString() == getCurrentLevelItem().toString()) // TODO: should fix comparison
         std::cout << "\x1b[4m" << item.toString() << "\x1b[0m ";
@@ -80,7 +82,7 @@ void Menu::displayLevelHorizontal(int level) const {
         std::cout << item.toString() << " ";
     }
 }
-void Menu::displayLevelVertical(int level) const {
+void Menu::displayLevelVertical(int level) {
     for (auto &item : getLevelItems(level)) {
         if (item.toString() == getCurrentLevelItem().toString()) // TODO: should fix comparison
         std::cout << "\x1b[4m" << item.toString() << "\x1b[0m" << std::endl;
@@ -89,29 +91,34 @@ void Menu::displayLevelVertical(int level) const {
     }
 }
 
-int Menu::getLevel() const {
+int Menu::getLevel() {
     return keys.size() - 1;
 }
-int Menu::getLevelKey(int level) const {
+int Menu::getLevelKey(int level) {
     return keys.at(level);
 }
-int Menu::getCurrentLevelKey() const {
+int Menu::getCurrentLevelKey() {
     return keys.back();
 }
-std::vector<MenuItem> Menu::getLevelItems(int level) const {
-    if (level == 0) {
-        return items;
+std::vector<MenuItem> Menu::getLevelItems(int level) {
+    std::vector<MenuItem> _items(items);
+
+    for (int i = 0; i < level; i++) {
+        _items = _items.at(getLevelKey(i)).items;
     }
-    MenuItem current = items.at(getLevelKey(0));
-    for (int i = 1; i < level; i++) {
-        current = current.items.at(getLevelKey(i));
+
+    _items.push_back(MenuItem(backLabel, [this]() { backMenu(); }));
+
+    if (level > 0) {
+        _items.push_back(MenuItem(exitLabel, [this]() { exitMenu(); }));
     }
-    return current.items;
+
+    return _items;
 }
-std::vector<MenuItem> Menu::getCurrentLevelItems() const {
+std::vector<MenuItem> Menu::getCurrentLevelItems() {
     return getLevelItems(getLevel());
 }
-MenuItem Menu::getCurrentLevelItem() const {
+MenuItem Menu::getCurrentLevelItem() {
     return getCurrentLevelItems().at(getCurrentLevelKey());
 }
 
