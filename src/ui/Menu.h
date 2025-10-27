@@ -4,12 +4,17 @@
 #include "MenuItem.h"
 
 class Menu {
-    public:
+public:
     std::vector<MenuItem> items;
     std::vector<int> keys;
+    bool horizontal;
 
-    Menu(std::vector<MenuItem> items);
+    Menu(std::vector<MenuItem> items, bool horizontal = true, std::vector<int> keys = {0});
 
+    void run();
+    void handleInput();
+
+    void display() const;
     void displayHorizontal() const;
     void displayVertical() const;
     void displayLevelHorizontal(int level) const;
@@ -21,7 +26,7 @@ class Menu {
     void exitMenu();
     void backMenu();
 
-    private:
+private:
     bool isRunning = true;
     
     int getLevel() const;

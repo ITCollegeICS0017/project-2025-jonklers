@@ -3,10 +3,9 @@
 #include <vector>
 #include <iostream>
 #include "MenuItem.h"
+#include "utils.h"
 
-Menu::Menu(std::vector<MenuItem> items) : items(items) {
-    keys = {0};
-}
+Menu::Menu(std::vector<MenuItem> items, bool horizontal, std::vector<int> keys) : items(items), keys(keys), horizontal(horizontal) {}
 
 void Menu::displayHorizontal() const {
     for (int level = 0; level <= getLevel(); level++) {
@@ -14,6 +13,62 @@ void Menu::displayHorizontal() const {
         std::cout << "\n";
     }
 }
+
+void Menu::run() {
+    while (isRunning) {
+        clearConsole();
+        display();
+        handleInput();
+    }
+}
+
+void Menu::handleInput() {
+    Key key = detectKey();
+    if (horizontal) {
+        switch (key) {
+            case Key::Left:
+                selectPrev();
+                break;
+            case Key::Right:
+                selectNext();
+                break;
+            case Key::Enter:
+                select();
+                break;
+            case Key::Quit:
+                exitMenu();
+                break;
+            default:
+                break;
+        }
+    } else {
+        switch (key) {
+            case Key::Up:
+                selectPrev();
+                break;
+            case Key::Down:
+                selectNext();
+                break;
+            case Key::Enter:
+                select();
+                break;
+            case Key::Quit:
+                exitMenu();
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+void Menu::display() const {
+    if (horizontal) {
+        displayHorizontal();
+    } else {
+        displayVertical();
+    }
+}
+
 void Menu::displayVertical() const {
     displayLevelVertical(getLevel());
 }
