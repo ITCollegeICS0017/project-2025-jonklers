@@ -1,8 +1,8 @@
 #pragma once
 #include "../data/DatabaseHandler.h"
-#include<memory>
-#include<string>
-#include<vector>
+#include <memory>
+#include <string>
+#include <vector>
 
 class User;
 class Listing;
