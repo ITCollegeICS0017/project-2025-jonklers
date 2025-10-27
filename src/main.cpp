@@ -18,12 +18,7 @@ int main() {
         MenuItem("View", lol),
     });
 
-    menu.displayHorizontal();
-    menu.selectPrev();
-    menu.displayHorizontal();
-    menu.selectNext();
-    menu.select();
-    menu.displayHorizontal();
+    menu.run();
 
     return 0;
 }
