@@ -107,10 +107,10 @@ std::vector<MenuItem> Menu::getLevelItems(int level) {
         _items = _items.at(getLevelKey(i)).items;
     }
 
-    _items.push_back(MenuItem(backLabel, [this]() { backMenu(); }));
+    _items.push_back(MenuItem(exitLabel, [this]() { exitMenu(); }));
 
     if (level > 0) {
-        _items.push_back(MenuItem(exitLabel, [this]() { exitMenu(); }));
+        _items.push_back(MenuItem(backLabel, [this]() { backMenu(); }));
     }
 
     return _items;
