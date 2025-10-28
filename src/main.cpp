@@ -1,24 +1,13 @@
 #include <iostream>
 #include <string>
-#include "ui/Menu.h"
-#include "ui/MenuItem.h"
+#include "ui/UI.h"
 
 void lol() {}
 
 int main() {
-    Menu menu({
-        MenuItem("File", {
-            MenuItem("New", lol),
-            MenuItem("Open", lol),
-            MenuItem("Save", lol),
-            MenuItem("Exit", lol),
-        }),
-        MenuItem("Edit", lol),
-        MenuItem("Selection", lol),
-        MenuItem("View", lol),
-    });
+    UI ui;
 
-    menu.run();
+    ui.startupMenu();
 
     return 0;
 }

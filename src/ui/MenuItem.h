@@ -11,6 +11,7 @@ public:
     std::vector<MenuItem> items;
     std::function<void()> action = nullptr;
 
+    MenuItem(std::string label);
     MenuItem(std::string label, std::function<void()> action);
     MenuItem(std::string label, std::vector<MenuItem> items);
     MenuItem(std::string label, std::vector<MenuItem> items, std::function<void()> action);

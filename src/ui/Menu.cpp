@@ -5,7 +5,7 @@
 #include "MenuItem.h"
 #include "utils.h"
 
-Menu::Menu(std::vector<MenuItem> items, bool horizontal, std::vector<int> keys) : items(items), keys(keys), horizontal(horizontal) {}
+Menu::Menu(std::vector<MenuItem>& items, bool horizontal, std::vector<int> keys) : items(items), keys(keys), horizontal(horizontal) {}
 
 void Menu::displayHorizontal() {
     for (int level = 0; level <= getLevel(); level++) {
@@ -125,7 +125,8 @@ MenuItem Menu::getCurrentLevelItem() {
 void Menu::select() {
     if (getCurrentLevelItem().action != nullptr) {
         getCurrentLevelItem().action();
-    } else if (!getCurrentLevelItem().items.empty()) {
+    } 
+    if (!getCurrentLevelItem().items.empty()) {
         keys.push_back(0);
     }
 }
