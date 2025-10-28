@@ -25,4 +25,4 @@ void clearConsole();
 // Returns a Key enum describing the pressed key. Returns Key::None
 // if no recognized key was pressed or if there was no input available.
 Key detectKey();
-
+void wait();

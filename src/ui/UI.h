@@ -12,7 +12,9 @@ class UI {
     
     void loginLeaf();
     void registerLeaf();
-    
+    void walletBalanceLeaf();
+    void bankBalanceLeaf();
+
     void startupMenu(); 
     void mainMenu();
     void profileMenu(/* TODO: reference to notifications */);
@@ -20,4 +22,5 @@ class UI {
     void listingMenu(Listing listing);
 
     void updateListingsItem(MenuItem* listingsItem);
+    void updateMyListingsItem(MenuItem* myListingsItem);
 };

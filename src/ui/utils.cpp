@@ -4,6 +4,7 @@
 #include "utils.h"
 
 #include <iostream>
+#include <limits>
 
 // Platform-specific headers
 #ifdef _WIN32
@@ -101,4 +102,9 @@ Key detectKey() {
     tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
     return out;
 #endif
+}
+
+void wait() {
+    std::cout << "Press Enter to continue...";
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
