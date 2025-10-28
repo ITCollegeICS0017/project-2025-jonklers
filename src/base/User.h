@@ -1,4 +1,5 @@
 #pragma once
+#include "../data/nlohmann/json.hpp"
 #include <string>
 #include <vector>
 #include <memory>
@@ -35,6 +36,9 @@ public:
     std::shared_ptr<Listing> create_listing();
     Wallet update_wallet();
     BankAccount update_bank_account();
+
+    void to_json(nlohmann::json& j, const User& obj);
+    void from_json(const nlohmann::json& j, User& obj);
 private:
     std::string user_id; 
     std::string password_hash;

@@ -1,4 +1,5 @@
 #pragma once
+#include "../data/nlohmann/json.hpp"
 #include <string>
 #include <chrono>
 
@@ -20,6 +21,8 @@ public:
     void set_product(std::string name, std::string description, Category category);
     Product get_product();
 
+    void to_json(nlohmann::json& j, const Listing& obj);
+    void from_json(const nlohmann::json& j, Listing& obj);
 protected:
     double price;
     std::string listing_id;
