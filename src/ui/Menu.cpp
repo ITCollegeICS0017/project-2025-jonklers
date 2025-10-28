@@ -1,9 +1,9 @@
 #include "Menu.h"
-#include "utils.h"
 
+#include "utils.h"
 #include <iostream>
 
-Menu::Menu(std::vector<MenuItem> items, bool horizontal, std::vector<int> keys) : items(items), horizontal(horizontal), keys(keys) {}
+Menu::Menu(std::shared_ptr<MenuItem> rootItem, std::vector<int> keys) : rootItem(rootItem), keys(keys) {};
 
 void Menu::run() {
     while (isRunning) {
@@ -14,87 +14,54 @@ void Menu::run() {
 }
 void Menu::handleInput() {
     Key key = detectKey();
-    if (horizontal) {
-        switch (key) {
-            case Key::Left:
-                selectPrev();
-                break;
-            case Key::Right:
-                selectNext();
-                break;
-            case Key::Enter:
-                select();
-                break;
-            case Key::Quit:
-                exitMenu();
-                break;
-            default:
-                break;
-        }
-    } else {
-        switch (key) {
-            case Key::Up:
-                selectPrev();
-                break;
-            case Key::Down:
-                selectNext();
-                break;
-            case Key::Enter:
-                select();
-                break;
-            case Key::Quit:
-                exitMenu();
-                break;
-            default:
-                break;
-        }
+    switch (key) {
+        case Key::Up:
+            selectPrev();
+            break;
+        case Key::Down:
+            selectNext();
+            break;
+        case Key::Enter:
+            select();
+            break;
+        case Key::Quit:
+            exitMenu();
+            break;
+        default:
+            break;
     }
 }
 
 void Menu::display() {
-    std::cout << headerMessage;
-    if (horizontal) {
-        displayHorizontal();
-    } else {
-        displayVertical();
-    }
-    std::cout << footerMessage;
+    displayLevel(getLevel());
 }
+void Menu::displayLevel(int level) {
+    auto parent = getLevelParent(level);
+    std::cout << parent->header;
 
-void Menu::displayHorizontal() {
-    for (int level = 0; level <= getLevel(); level++) {
-        displayLevelHorizontal(level);
-        std::cout << "\n";
-    }
-}
-void Menu::displayVertical() {
-    displayLevelVertical(getLevel());
-}
-void Menu::displayLevelHorizontal(int level) {
-    for (auto &item : getLevelItems(level)) {
-        if (item.toString() == getCurrentLevelItem().toString()) // TODO: should fix comparison
-        std::cout << "\x1b[4m" << item.toString() << "\x1b[0m ";
+    for (auto child : parent->items) {
+        if (child == getCurrentItem())
+            std::cout << "\x1b[4m" << child->toString() << "\x1b[0m" << std::endl;
         else
-        std::cout << item.toString() << " ";
+            std::cout << child->toString() << std::endl;
     }
-}
-void Menu::displayLevelVertical(int level) {
-    for (auto &item : getLevelItems(level)) {
-        if (item.toString() == getCurrentLevelItem().toString()) // TODO: should fix comparison
-        std::cout << "\x1b[4m" << item.toString() << "\x1b[0m" << std::endl;
-        else
-        std::cout << item.toString() << std::endl;
-    }
+
+    std::cout << parent->footer;
 }
 
-std::vector<MenuItem>* Menu::getLevelItemsRaw(int level) {
-    std::vector<MenuItem>* itemsPtr = &items;
-
-    for (int i = 0; i < level; i++) {
-        itemsPtr = &(*itemsPtr).at(getLevelKey(i)).items;
+void Menu::exitMenu() {
+    isRunning = false;
+}
+void Menu::backMenu() {
+    if (getLevel() != 0) {
+        keys.pop_back();
     }
-
-    return itemsPtr;
+    else {
+        exitMenu();
+    }
+}
+void Menu::gotoItem(std::shared_ptr<MenuItem> item) {
+    keys = findItemPath(item);
 }
 
 int Menu::getLevel() {
@@ -103,49 +70,47 @@ int Menu::getLevel() {
 int Menu::getLevelKey(int level) {
     return keys.at(level);
 }
-int Menu::getCurrentLevelKey() {
-    return keys.back();
+int Menu::getCurrentKey() {
+    return getLevelKey(getLevel());
 }
-std::vector<MenuItem> Menu::getLevelItems(int level) {
-    std::vector<MenuItem> _items(*getLevelItemsRaw(level));
 
-    if (level > 0) {
-        MenuItem backItem(backLabel, {}, [this] { backMenu(); });
-        _items.emplace_back(backItem);
+std::shared_ptr<MenuItem> Menu::getLevelParent(int level) {
+    std::shared_ptr<MenuItem> parent = rootItem;
+
+    for (int i = 0; i < level; i++) {
+        parent = parent->items.at(getLevelKey(i-1));
     }
 
-    MenuItem exitItem(exitLabel, {}, [this] { exitMenu(); });
-    _items.emplace_back(exitItem);
+    return parent;
+}
+std::vector<std::shared_ptr<MenuItem>> Menu::getLevelChildren(int level) {
+    return getLevelParent(level)->items;
+}
+std::vector<std::shared_ptr<MenuItem>> Menu::getCurrentChildren() {
+    return getLevelChildren(getLevel());
+}
+std::shared_ptr<MenuItem> Menu::getCurrentItem() {
+    return getLevelChildren(getLevel()).at(getCurrentKey());
+}
 
-    return _items;
-}
-std::vector<MenuItem> Menu::getCurrentLevelItems() {
-    return getLevelItems(getLevel());
-}
-MenuItem Menu::getCurrentLevelItem() {
-    return getCurrentLevelItems().at(getCurrentLevelKey());
+std::vector<int> Menu::findItemPath(std::shared_ptr<MenuItem> target) {
+    std::vector<int> _keys = rootItem->findItem(target);
+    assert(!_keys.empty());
+    return _keys;
 }
 
 void Menu::select() {
-    auto item = getCurrentLevelItem();
-    if (item.action != nullptr) {
-        item.action();
+    auto item = getCurrentItem();
+    if (item->action != nullptr) {
+        item->action();
     }
-    if (!item.items.empty()) {
+    if (!item->items.empty()) {
         keys.push_back(0);
     }
 }
 void Menu::selectNext() {
-    keys.back() = ++keys.back() % getCurrentLevelItems().size();
+    keys.back() = ++keys.back() % getCurrentChildren().size();
 }
 void Menu::selectPrev() {
-    keys.back() = (--keys.back() + getCurrentLevelItems().size()) % getCurrentLevelItems().size();
-}
-void Menu::exitMenu() {
-    isRunning = false;
-}
-void Menu::backMenu() {
-    if (getLevel() > 0) {
-        keys.pop_back();
-    }
+    keys.back() = (--keys.back() + getCurrentChildren().size()) % getCurrentChildren().size();
 }
