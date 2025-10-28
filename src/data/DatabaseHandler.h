@@ -12,6 +12,7 @@ class Listing;
 
 class DatabaseHandler {
 public:
+    DatabaseHandler() = default;
     DatabaseHandler(std::string user_fp, std::string listing_fp); // file paths
     void set_user_file(std::string new_path);
     void set_listing_file(std::string new_path);

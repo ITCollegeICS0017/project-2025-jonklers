@@ -66,10 +66,6 @@ void from_json(const nlohmann::json& j, User& u) {
     u.set_bank_account(b);
     u.set_messages(m);
 }
-std::shared_ptr<Listing> User::create_listing() {
-    //TODO:
-    return std::make_shared<Listing>();
-}
 
 std::string hash_password(std::string &plaintext){
     // Create a new digest context

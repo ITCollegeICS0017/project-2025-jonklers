@@ -13,8 +13,10 @@ public:
     LogicHandler() = default;
     bool log_in(std::string u_id, std::string passwd);
     bool register_user(std::string u_id, std::string passwd);
+    bool create_listing();
 
     User& get_current_user() { return db.get_curr();}
+
 
 
     std::vector<std::shared_ptr<Listing>> get_filtered(std::vector<std::shared_ptr<Listing>> to_filter, Category category);

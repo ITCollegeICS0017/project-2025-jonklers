@@ -36,7 +36,6 @@ public:
     User() = default;
     User(std::string id, Wallet wallet, BankAccount bank_account, std::vector<Message> messages);
 
-    std::shared_ptr<Listing> create_listing();
     Wallet update_wallet();
     BankAccount update_bank_account();
 
