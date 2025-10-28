@@ -2,10 +2,11 @@
 #pragma once
 
 #include <iosfwd>
+#include <string>
 #include "../base/User.h"
 #include "../base/Listing.h"
 
-std::string enumToStr(Category e) {
+inline std::string enumToStrCategory(Category e) {
     switch (e) {
         case Category::BOOKS:
             return "BOOKS";
@@ -21,7 +22,7 @@ std::string enumToStr(Category e) {
             return "NONE";
     }
 }
-std::string enumToStr(FiatCurrency e) {
+inline std::string enumToStrFiat(FiatCurrency e) {
     switch (e) {
         case FiatCurrency::CNY:
             return "CNY";
@@ -35,7 +36,7 @@ std::string enumToStr(FiatCurrency e) {
             return "NONE";
     }
 }
-std::string enumToStr(CryptoCurrency e) {
+inline std::string enumToStrCrypto(CryptoCurrency e) {
     switch (e) {
         case CryptoCurrency::BITCOIN:
             return "BITCOIN";
