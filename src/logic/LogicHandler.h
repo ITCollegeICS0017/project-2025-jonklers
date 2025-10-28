@@ -10,7 +10,7 @@ enum class Category;
 
 class LogicHandler {
 public:
-    LogicHandler();
+    LogicHandler() = default;
     bool log_in(std::string u_id, std::string passwd);
     bool register_user(std::string u_id, std::string passwd);
 

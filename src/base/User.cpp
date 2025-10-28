@@ -71,7 +71,35 @@ std::shared_ptr<Listing> User::create_listing() {
     return std::make_shared<Listing>();
 }
 
-std::string hash_password(std::string plaintext){
-    //TODO
-    return "";
+std::string hash_password(std::string &plaintext){
+    // Create a new digest context
+    EVP_MD_CTX *ctx = EVP_MD_CTX_new();
+    if (!ctx)
+        throw std::runtime_error("Failed to create EVP_MD_CTX");
+
+    unsigned char hash[EVP_MAX_MD_SIZE];
+    unsigned int length = 0;
+
+    // Initialize for SHA-256
+    if (EVP_DigestInit_ex(ctx, EVP_sha256(), nullptr) != 1)
+        throw std::runtime_error("EVP_DigestInit_ex failed");
+
+    // Feed data
+    if (EVP_DigestUpdate(ctx, plaintext.data(), plaintext.size()) != 1)
+        throw std::runtime_error("EVP_DigestUpdate failed");
+
+    // Finalize digest
+    if (EVP_DigestFinal_ex(ctx, hash, &length) != 1)
+        throw std::runtime_error("EVP_DigestFinal_ex failed");
+
+    // Clean up
+    EVP_MD_CTX_free(ctx);
+
+    // Convert binary hash to hex string
+    std::ostringstream oss;
+    oss << std::hex << std::setfill('0');
+    for (unsigned int i = 0; i < length; ++i)
+        oss << std::setw(2) << static_cast<int>(hash[i]);
+
+    return oss.str();
 }
