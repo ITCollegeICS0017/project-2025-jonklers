@@ -1,9 +1,10 @@
 #include "DatabaseHandler.h"
 #include "../base/User.h"
-#include "nlohmann/json.hpp"
+#include "../base/Auction.h"
+#include "../base/Listing.h"
+#include "../base/Negotiation.h"
 #include <filesystem>
 #include <fstream>
-#include <future>
 #include <memory>
 #include <stdexcept>
 
@@ -37,7 +38,69 @@ std::unique_ptr<User> DatabaseHandler::load_user(std::string id) {
     std::ifstream file(this->usr_filepath);
     if(!file.is_open()) throw std::runtime_error("Cannot open user file!");
     file >> j;
+    file.close();
     User u = j.at(id).get<User>();
     u.set_id(id);
     return std::make_unique<User>(u);
+}
+
+void DatabaseHandler::update_usr(const User& u) {
+    nlohmann::json j;
+    std::ifstream infile(this->usr_filepath);
+    if(!infile.is_open()) throw std::runtime_error("Cannot open user file!");
+    infile >> j;
+    infile.close();
+    if(!j.contains(u.get_id())) throw std::runtime_error("User doesn't exist!");
+    j[u.get_id()] = u;
+
+    std::ofstream outfile(this->usr_filepath);
+    if(!outfile.is_open()) throw std::runtime_error("Cannot open user file!");
+    outfile << j.dump(4);
+    outfile.close();
+}
+
+void DatabaseHandler::delete_usr(const User& u) {
+    nlohmann::json j;
+    std::ifstream infile(this->usr_filepath);
+    if(!infile.is_open()) throw std::runtime_error("Cannot open user file!");
+    infile >> j;
+    infile.close();
+    if(!j.contains(u.get_id())) throw std::runtime_error("User doesn't exist!"); //sanity check
+    j.erase(u.get_id());
+
+    std::ofstream outfile(this->usr_filepath);
+    if(!outfile.is_open()) throw std::runtime_error("Cannot open user file!");
+    outfile << j.dump(4);
+    outfile.close();
+}
+
+void DatabaseHandler::register_usr(const User& u) {
+    nlohmann::json j;
+    std::ifstream infile(this->usr_filepath);
+    if(!infile.is_open()) throw std::runtime_error("Cannot open user file!");
+    infile >> j;
+    infile.close();
+    if(j.contains(u.get_id())) throw std::runtime_error("User already exist!"); //sanity check
+    j[u.get_id()] = u;
+
+    std::ofstream outfile(this->usr_filepath);
+    if(!outfile.is_open()) throw std::runtime_error("Cannot open user file!");
+    outfile << j.dump(4);
+    outfile.close();
+}
+
+std::unique_ptr<Listing> DatabaseHandler::load_single_listing(std::string id) {
+    nlohmann::json j;
+    std::ifstream infile(this->lst_filepath);
+    if(!infile.is_open()) throw std::runtime_error("Cannot open user file!");
+    infile >> j;
+    infile.close();
+    return std::make_unique<Listing>(j[id]);
+    if(j[id].contains("last_bidder_id")) {
+        return std::make_unique<Auction>(j[id].get<Auction>());
+    }else if(j[id].contains("offers")) {
+        return std::make_unique<Negotiation>(j[id].get<Negotiation>());
+    }else {
+        return std::make_unique<Listing>();
+    }
 }
