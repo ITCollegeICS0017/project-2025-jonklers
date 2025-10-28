@@ -16,10 +16,23 @@ public:
     void set_user_file(std::string new_path);
     void set_listing_file(std::string new_path);
 
-    std::unique_ptr<User> load_user(std::string user_id);
     void set_curr_usr(std::unique_ptr<User> up) { this->current_user = std::move(up); }
-    std::unique_ptr<Listing> load_single_listing(std::string listing_id);
+    void set_listings();
+
+    User& get_curr() { return *this->current_user;}
+
+    //Read
+    std::unique_ptr<User> load_user(std::string user_id);
     std::vector<std::shared_ptr<Listing>> load_all_listings();
+    std::unique_ptr<Listing> load_single_listing(std::string listing_id);
+
+    //Write
+    void update_usr(const User& u);
+    void register_usr(const User& u);
+    void delete_usr(const User& u);
+    void add_listing(const std::unique_ptr<Listing> l);
+    void archive_listing(std::string l_id);
+    void delete_listing(std::string l_id);
 
 private:
     std::unordered_map<std::string, std::shared_ptr<Listing>> all_listings;

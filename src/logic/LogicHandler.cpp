@@ -23,3 +23,13 @@ std::vector<std::shared_ptr<Listing>> get_sorted(std::vector<std::shared_ptr<Lis
     std::vector<std::shared_ptr<Listing>> v;
     return v;
 }
+
+bool LogicHandler::log_in(std::string usrname, std::string password) {
+
+    return true;
+}
+
+bool LogicHandler::register_user(std::string usrname, std::string password) {
+
+    return true;
+}
