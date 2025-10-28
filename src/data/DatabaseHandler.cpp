@@ -33,6 +33,13 @@ void DatabaseHandler::set_listing_file(std::string new_path) {
     this->lst_filepath = new_path;
 }
 
+void DatabaseHandler::set_archived_file(std::string new_path) {
+    std::filesystem::path listing_path(archive_filepath);
+    if(!std::filesystem::exists(listing_path)) throw std::runtime_error("Database error: Invalid file path!");
+    if(!std::filesystem::is_regular_file(listing_path)) throw std::runtime_error("Database error: Not a file!");
+    this->archive_filepath = new_path;
+}
+
 std::unique_ptr<User> DatabaseHandler::load_user(std::string id) {
     nlohmann::json j;
     std::ifstream file(this->usr_filepath);
@@ -89,13 +96,12 @@ void DatabaseHandler::register_usr(const User& u) {
     outfile.close();
 }
 
-std::unique_ptr<Listing> DatabaseHandler::load_single_listing(std::string id) {
+/*std::unique_ptr<Listing> DatabaseHandler::load_single_listing(std::string id) {
     nlohmann::json j;
     std::ifstream infile(this->lst_filepath);
     if(!infile.is_open()) throw std::runtime_error("Cannot open user file!");
     infile >> j;
     infile.close();
-    return std::make_unique<Listing>(j[id]);
     if(j[id].contains("last_bidder_id")) {
         return std::make_unique<Auction>(j[id].get<Auction>());
     }else if(j[id].contains("offers")) {
@@ -103,4 +109,75 @@ std::unique_ptr<Listing> DatabaseHandler::load_single_listing(std::string id) {
     }else {
         return std::make_unique<Listing>();
     }
+}
+*/
+
+void DatabaseHandler::add_listing(std::shared_ptr<Listing> l) {
+    all_listings[l->get_listing_id()] = l;
+    update_listings_file();
+    //nlohmann::json j;
+    //std::ifstream infile(this->lst_filepath);
+    //if(!infile.is_open()) throw std::runtime_error("Cannot open listing file!");
+    //infile >> j;
+    //infile.close();
+    //j[l->get_listing_id()] = *l; 
+
+    //std::ofstream outfile(this->lst_filepath);
+    //if(!outfile.is_open()) throw std::runtime_error("Cannot open listing file!");
+    //outfile << j.dump(4);
+    //outfile.close();
+}
+
+void DatabaseHandler::load_all_listings() {
+    nlohmann::json j;
+    std::ifstream infile(this->lst_filepath);
+    if(!infile.is_open()) throw std::runtime_error("Cannot open listing file!");
+    infile >> j;
+    infile.close();
+    for(auto& [id, listing] : j.items()) {
+        std::shared_ptr<Listing> l;
+        if(listing.contains("last_bidder_id")) {
+            l = std::make_shared<Listing>(listing.get<Auction>()); 
+        }else if(listing.contains("offers")) {
+            l = std::make_shared<Listing>(listing.get<Negotiation>()); 
+        }else {
+            l = std::make_shared<Listing>(listing.get<Listing>()); 
+        }
+        l->set_listing_id(id);
+        all_listings[id] = l;
+    }
+}
+
+void DatabaseHandler::update_listings_file() {
+    nlohmann::json j;
+    std::ofstream outfile(this->lst_filepath);
+    if(!outfile.is_open()) throw std::runtime_error("Cannot open listing file!");
+    for(const auto& [id, obj] : all_listings) {
+        j[id] = *obj;
+    }
+    outfile << j.dump(4);
+    outfile.close();
+}
+
+
+
+void DatabaseHandler::archive_listing(std::string id) {
+    if(all_listings.find(id) == all_listings.end()) throw std::runtime_error("Listing doesn't exist!"); 
+    auto l = all_listings[id];
+    all_listings.erase(id);
+    append_archive(l);
+    update_listings_file();
+}
+
+void DatabaseHandler::append_archive(std::shared_ptr<Listing> l) {
+    nlohmann::json j;
+    std::ifstream ifile(this->archive_filepath);
+    if(!ifile.is_open()) throw std::runtime_error("Cannot open archive file!");
+    ifile >> j;
+    ifile.close();
+    j.push_back(*l);
+    std::ofstream outfile(this->archive_filepath);
+    if(!outfile.is_open()) throw std::runtime_error("Cannot open archive file!");
+    outfile << j.dump(4);
+    outfile.close();
 }

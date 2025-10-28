@@ -5,7 +5,6 @@
 
 struct Offer {
     std::string sender_id;
-    std::string receiver_id;
     std::string neg_amount;
 };
 
@@ -17,7 +16,7 @@ public:
     std::vector<Offer> get_offers() const { return this->offers;}
     void set_offers(std::vector<Offer> o) { this->offers = o;}
 
-    std::shared_ptr<Offer> make_offer();
+    void add_offer(Offer o) {offers.push_back(o);}
 private:
     std::vector<Offer> offers;
 };

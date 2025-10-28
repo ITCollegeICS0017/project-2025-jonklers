@@ -18,8 +18,6 @@ public:
     Listing() = default;
     Listing(std::string listing_id, double price, std::string owner_id, std::time_t expiry);
 
-    void conclude_sale();
-    
     //Getters
     double get_price() const { return this->price;}
     std::string get_listing_id() const { return this->listing_id;}
