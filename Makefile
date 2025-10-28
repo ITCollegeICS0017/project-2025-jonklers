@@ -1,6 +1,10 @@
 
 CC=g++
-CFLAGS=-Wall -Wextra -std=c++11
+
+DEBUGFLAGS=-g -O0
+RELEASEFLAGS=-O2
+CFLAGS=-Wall -Wextra -std=c++11 $(DEBUGFLAGS)
+
 # Find all .cpp files recursively under src
 SRC:=$(shell find src -name '*.cpp')
 # Map src/<path>.cpp -> build/<path>.o

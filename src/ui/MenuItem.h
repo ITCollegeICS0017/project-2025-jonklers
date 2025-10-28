@@ -1,20 +1,15 @@
-
 #pragma once
-
-#include <string>
-#include <vector>
 #include <functional>
+#include <vector>
+#include <string>
 
 class MenuItem {
-public:
+    public:
     std::string label;
+    std::function<void()> action;
     std::vector<MenuItem> items;
-    std::function<void()> action = nullptr;
 
-    MenuItem(std::string label);
-    MenuItem(std::string label, std::function<void()> action);
-    MenuItem(std::string label, std::vector<MenuItem> items);
-    MenuItem(std::string label, std::vector<MenuItem> items, std::function<void()> action);
+    explicit MenuItem(std::string label, std::vector<MenuItem> items = {}, std::function<void()> action = nullptr);
 
     std::string toString() const;
 };

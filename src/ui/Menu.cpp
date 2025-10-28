@@ -1,27 +1,18 @@
 #include "Menu.h"
-
-#include <vector>
-#include <iostream>
-#include "MenuItem.h"
 #include "utils.h"
 
-Menu::Menu(std::vector<MenuItem>& items, bool horizontal, std::vector<int> keys) : items(items), keys(keys), horizontal(horizontal) {}
+#include <iostream>
 
-void Menu::displayHorizontal() {
-    for (int level = 0; level <= getLevel(); level++) {
-        displayLevelHorizontal(level);
-        std::cout << "\n";
-    }
-}
+Menu::Menu(std::vector<MenuItem> items, bool horizontal, std::vector<int> keys) : items(items), horizontal(horizontal), keys(keys) {}
 
 void Menu::run() {
     while (isRunning) {
         clearConsole();
+        std::cout << items.size();
         display();
         handleInput();
     }
 }
-
 void Menu::handleInput() {
     Key key = detectKey();
     if (horizontal) {
@@ -71,6 +62,12 @@ void Menu::display() {
     std::cout << footerMessage;
 }
 
+void Menu::displayHorizontal() {
+    for (int level = 0; level <= getLevel(); level++) {
+        displayLevelHorizontal(level);
+        std::cout << "\n";
+    }
+}
 void Menu::displayVertical() {
     displayLevelVertical(getLevel());
 }
@@ -91,6 +88,16 @@ void Menu::displayLevelVertical(int level) {
     }
 }
 
+std::vector<MenuItem>* Menu::getLevelItemsRaw(int level) {
+    std::vector<MenuItem>* itemsPtr = &items;
+
+    for (int i = 0; i < level; i++) {
+        itemsPtr = &(*itemsPtr).at(getLevelKey(i)).items;
+    }
+
+    return itemsPtr;
+}
+
 int Menu::getLevel() {
     return keys.size() - 1;
 }
@@ -101,17 +108,15 @@ int Menu::getCurrentLevelKey() {
     return keys.back();
 }
 std::vector<MenuItem> Menu::getLevelItems(int level) {
-    std::vector<MenuItem> _items(items);
-
-    for (int i = 0; i < level; i++) {
-        _items = _items.at(getLevelKey(i)).items;
-    }
-
-    _items.push_back(MenuItem(exitLabel, [this]() { exitMenu(); }));
+    std::vector<MenuItem> _items(*getLevelItemsRaw(level));
 
     if (level > 0) {
-        _items.push_back(MenuItem(backLabel, [this]() { backMenu(); }));
+        MenuItem backItem(backLabel, {}, [this] { backMenu(); });
+        _items.emplace_back(backItem);
     }
+
+    MenuItem exitItem(exitLabel, {}, [this] { exitMenu(); });
+    _items.emplace_back(exitItem);
 
     return _items;
 }
@@ -123,10 +128,11 @@ MenuItem Menu::getCurrentLevelItem() {
 }
 
 void Menu::select() {
-    if (getCurrentLevelItem().action != nullptr) {
-        getCurrentLevelItem().action();
-    } 
-    if (!getCurrentLevelItem().items.empty()) {
+    auto item = getCurrentLevelItem();
+    if (item.action != nullptr) {
+        item.action();
+    }
+    if (!item.items.empty()) {
         keys.push_back(0);
     }
 }

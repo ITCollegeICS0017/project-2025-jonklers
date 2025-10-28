@@ -8,23 +8,26 @@ UI::UI() {}
 // Menus
 void UI::startupMenu() {
     std::vector<MenuItem> items = {
-        MenuItem("Login", [this]() { loginLeaf(); }),
-        MenuItem("Register", [this]() { registerLeaf(); }),
+        MenuItem("Login", {}, [this] { loginLeaf(); }),
+        MenuItem("Register", {}, [this] { registerLeaf(); }),
     };
 
     Menu menu(items);
     menu.run();
 }
 void UI::mainMenu() {
-    MenuItem listingsItem = MenuItem("Listings", [this, &listingsItem]() { updateListingsItem(listingsItem); });
+    MenuItem listingsItem("Listings", {MenuItem("wasd")});
+    MenuItem* listingsItemPtr = &listingsItem;
+    listingsItem.action = [this, listingsItemPtr] { updateListingsItem(listingsItemPtr); };
+    MenuItem notificationsItem("Notifications", {}, [] {  });
+    MenuItem profileItem("Profile", {}, [] {  });
 
-    std::vector<MenuItem> items = {
-        listingsItem,
-        MenuItem("Notifications", [this]() {  }),
-        MenuItem("Profile", [this]() {  }),
-    };
+    updateListingsItem(listingsItemPtr);
+    Menu menu({}, true, {0, 1});
+    menu.items.emplace_back(listingsItem);
+    menu.items.emplace_back(notificationsItem);
+    menu.items.emplace_back(profileItem);
 
-    Menu menu(items);
     menu.run();
 }
 
@@ -55,10 +58,10 @@ void UI::registerLeaf() {
 }
 
 // Updates
-void UI::updateListingsItem(MenuItem& listingsItem) {
-    listingsItem.items = {
-        MenuItem("Listing 1", [this]() {  }),
-        MenuItem("Listing 2", [this]() {  }),
-        MenuItem("Listing 3", [this]() {  }),
-    };
+void UI::updateListingsItem(MenuItem* listingsItem) {
+    // listingsItem->items = {
+    //     MenuItem("Listing 1", {}, []() {  }),
+    //     MenuItem("Listing 2", {}, []() {  }),
+    //     MenuItem("Listing 3", {}, []() {  }),
+    // };
 }

@@ -20,5 +20,5 @@ class UI {
     void listingsMenu(std::vector<Listing> listings);
     void listingMenu(Listing listing);
 
-    void updateListingsItem(MenuItem& listingsItem);
+    void updateListingsItem(MenuItem* listingsItem);
 };
