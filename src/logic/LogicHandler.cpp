@@ -23,3 +23,8 @@ bool LogicHandler::register_user(std::string usrname, std::string password) {
 
     return true;
 }
+
+bool LogicHandler::create_listing() {
+
+    return true;
+}
