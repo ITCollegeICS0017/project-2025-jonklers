@@ -1,27 +1,18 @@
 #include "Menu.h"
-
-#include <vector>
-#include <iostream>
-#include "MenuItem.h"
 #include "utils.h"
 
-Menu::Menu(std::vector<MenuItem> items, bool horizontal, std::vector<int> keys) : items(items), keys(keys), horizontal(horizontal) {}
+#include <iostream>
 
-void Menu::displayHorizontal() const {
-    for (int level = 0; level <= getLevel(); level++) {
-        displayLevelHorizontal(level);
-        std::cout << "\n";
-    }
-}
+Menu::Menu(std::vector<MenuItem> items, bool horizontal, std::vector<int> keys) : items(items), horizontal(horizontal), keys(keys) {}
 
 void Menu::run() {
     while (isRunning) {
         clearConsole();
+        std::cout << items.size();
         display();
         handleInput();
     }
 }
-
 void Menu::handleInput() {
     Key key = detectKey();
     if (horizontal) {
@@ -61,18 +52,26 @@ void Menu::handleInput() {
     }
 }
 
-void Menu::display() const {
+void Menu::display() {
+    std::cout << headerMessage;
     if (horizontal) {
         displayHorizontal();
     } else {
         displayVertical();
     }
+    std::cout << footerMessage;
 }
 
-void Menu::displayVertical() const {
+void Menu::displayHorizontal() {
+    for (int level = 0; level <= getLevel(); level++) {
+        displayLevelHorizontal(level);
+        std::cout << "\n";
+    }
+}
+void Menu::displayVertical() {
     displayLevelVertical(getLevel());
 }
-void Menu::displayLevelHorizontal(int level) const {
+void Menu::displayLevelHorizontal(int level) {
     for (auto &item : getLevelItems(level)) {
         if (item.toString() == getCurrentLevelItem().toString()) // TODO: should fix comparison
         std::cout << "\x1b[4m" << item.toString() << "\x1b[0m ";
@@ -80,7 +79,7 @@ void Menu::displayLevelHorizontal(int level) const {
         std::cout << item.toString() << " ";
     }
 }
-void Menu::displayLevelVertical(int level) const {
+void Menu::displayLevelVertical(int level) {
     for (auto &item : getLevelItems(level)) {
         if (item.toString() == getCurrentLevelItem().toString()) // TODO: should fix comparison
         std::cout << "\x1b[4m" << item.toString() << "\x1b[0m" << std::endl;
@@ -89,36 +88,51 @@ void Menu::displayLevelVertical(int level) const {
     }
 }
 
-int Menu::getLevel() const {
+std::vector<MenuItem>* Menu::getLevelItemsRaw(int level) {
+    std::vector<MenuItem>* itemsPtr = &items;
+
+    for (int i = 0; i < level; i++) {
+        itemsPtr = &(*itemsPtr).at(getLevelKey(i)).items;
+    }
+
+    return itemsPtr;
+}
+
+int Menu::getLevel() {
     return keys.size() - 1;
 }
-int Menu::getLevelKey(int level) const {
+int Menu::getLevelKey(int level) {
     return keys.at(level);
 }
-int Menu::getCurrentLevelKey() const {
+int Menu::getCurrentLevelKey() {
     return keys.back();
 }
-std::vector<MenuItem> Menu::getLevelItems(int level) const {
-    if (level == 0) {
-        return items;
+std::vector<MenuItem> Menu::getLevelItems(int level) {
+    std::vector<MenuItem> _items(*getLevelItemsRaw(level));
+
+    if (level > 0) {
+        MenuItem backItem(backLabel, {}, [this] { backMenu(); });
+        _items.emplace_back(backItem);
     }
-    MenuItem current = items.at(getLevelKey(0));
-    for (int i = 1; i < level; i++) {
-        current = current.items.at(getLevelKey(i));
-    }
-    return current.items;
+
+    MenuItem exitItem(exitLabel, {}, [this] { exitMenu(); });
+    _items.emplace_back(exitItem);
+
+    return _items;
 }
-std::vector<MenuItem> Menu::getCurrentLevelItems() const {
+std::vector<MenuItem> Menu::getCurrentLevelItems() {
     return getLevelItems(getLevel());
 }
-MenuItem Menu::getCurrentLevelItem() const {
+MenuItem Menu::getCurrentLevelItem() {
     return getCurrentLevelItems().at(getCurrentLevelKey());
 }
 
 void Menu::select() {
-    if (getCurrentLevelItem().action != nullptr) {
-        getCurrentLevelItem().action();
-    } else if (!getCurrentLevelItem().items.empty()) {
+    auto item = getCurrentLevelItem();
+    if (item.action != nullptr) {
+        item.action();
+    }
+    if (!item.items.empty()) {
         keys.push_back(0);
     }
 }
