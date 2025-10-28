@@ -12,6 +12,7 @@ public:
     std::string footerMessage = "";
     std::string backLabel = "Back";
     std::string exitLabel = "Exit";
+    bool isRunning = true;
 
     Menu(std::vector<MenuItem> items = {}, bool horizontal = false, std::vector<int> keys = {0});
 
@@ -25,9 +26,9 @@ public:
     void displayLevelVertical(int level);
 
     std::vector<MenuItem>* getLevelItemsRaw(int level);
+    void exitMenu();
 
 private:
-    bool isRunning = true;
 
     int getLevel();
     int getLevelKey(int level);
@@ -39,6 +40,5 @@ private:
     void select();
     void selectNext();
     void selectPrev();
-    void exitMenu();
     void backMenu();
 };
