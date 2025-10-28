@@ -90,7 +90,12 @@ std::shared_ptr<MenuItem> Menu::getLevelParent(int level) {
 }
 std::vector<std::shared_ptr<MenuItem>> Menu::getLevelChildren(int level) {
     std::vector<std::shared_ptr<MenuItem>> items(getLevelParent(level)->items);
-    items.push_back(std::make_shared<MenuItem>("Back", [this] { backMenu(); }));
+
+    if (level == 0)
+        items.push_back(std::make_shared<MenuItem>(exitLabel, [this] { exitMenu(); }));
+    else
+        items.push_back(std::make_shared<MenuItem>(backLabel, [this] { backMenu(); }));
+
     return items;
 }
 std::vector<std::shared_ptr<MenuItem>> Menu::getCurrentChildren() {
