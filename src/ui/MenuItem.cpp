@@ -18,7 +18,7 @@ std::vector<int> MenuItem::findItem(std::shared_ptr<MenuItem> target, std::vecto
         if (!found.empty()) {
             return found;
         }
-        keys.back++;
+        keys.back()++;
     }
 
     return {};
