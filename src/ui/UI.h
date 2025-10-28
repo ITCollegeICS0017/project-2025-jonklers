@@ -19,8 +19,6 @@ class UI {
 
     void startupMenu(); 
     void mainMenu();
-    void profileMenu(/* TODO: reference to notifications */);
-    void notificationsMenu(/* TODO: reference to notifications */);
     void listingMenu(std::shared_ptr<Listing> listing);
 
     void updateListingsItem(MenuItem* listingsItem);

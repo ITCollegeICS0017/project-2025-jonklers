@@ -2,6 +2,53 @@
 #pragma once
 
 #include <iosfwd>
+#include "../base/User.h"
+#include "../base/Listing.h"
+
+std::string enumToStr(Category e) {
+    switch (e) {
+        case Category::BOOKS:
+            return "BOOKS";
+        case Category::ELECTRONICS:
+            return "ELECTRONICS";
+        case Category::FASHION:
+            return "FASHION";
+        case Category::GARDEN:
+            return "GARDEN";
+        case Category::HOME:
+            return "HOME";
+        default:
+            return "NONE";
+    }
+}
+std::string enumToStr(FiatCurrency e) {
+    switch (e) {
+        case FiatCurrency::CNY:
+            return "CNY";
+        case FiatCurrency::EUR:
+            return "EUR";
+        case FiatCurrency::JPY:
+            return "JPY";
+        case FiatCurrency::USD:
+            return "USD";
+        default:
+            return "NONE";
+    }
+}
+std::string enumToStr(CryptoCurrency e) {
+    switch (e) {
+        case CryptoCurrency::BITCOIN:
+            return "BITCOIN";
+        case CryptoCurrency::DODGECOIN:
+            return "DODGECOIN";
+        case CryptoCurrency::ETHERIUM:
+            return "ETHERIUM";
+        case CryptoCurrency::MONERO:
+            return "MONERO";
+        default:
+            return "NONE";
+    }
+}
 
 // Keys that detectArrowKey can return
 enum class Key {

@@ -13,7 +13,7 @@ public:
     std::string backLabel = "Back";
     std::string exitLabel = "Exit";
 
-    Menu(std::vector<MenuItem> items = {}, bool horizontal = true, std::vector<int> keys = {0});
+    Menu(std::vector<MenuItem> items = {}, bool horizontal = false, std::vector<int> keys = {0});
 
     void run();
     void handleInput();

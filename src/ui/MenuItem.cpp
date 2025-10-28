@@ -5,6 +5,6 @@ MenuItem::MenuItem(std::string label, std::vector<MenuItem> items, std::function
 std::string MenuItem::toString() const {
     std::string result;
     result += label;
-    if (!items.empty()) result += "/"; // TODO: change folder display notation
+    if (!items.empty()) result += ""; // TODO: change folder display notation
     return result;
 }
