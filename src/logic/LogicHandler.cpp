@@ -5,15 +5,19 @@
 #include <vector>
 
 std::vector<std::shared_ptr<Listing>> LogicHandler::get_filtered(Category category){
-    //TODO
-    std::vector<std::shared_ptr<Listing>> v;
-    return v;
+    auto all = get_all_listings(); 
+    std::vector<std::shared_ptr<Listing>> filtered_v;
+    for(auto l : all) {
+        if(l->get_product().category == category) filtered_v.push_back(l);
+    }
+    return filtered_v;
 }
 
-std::vector<std::shared_ptr<Listing>> LogicHandler::get_sorted(bool descending){
+std::vector<std::shared_ptr<Listing>> LogicHandler::get_sorted(bool cheapest_first){
     //TODO
-    std::vector<std::shared_ptr<Listing>> v;
-    return v;
+    auto all = get_all_listings();
+    std::sort(all.begin(), all.end(), [cheapest_first](const auto& a, const auto& b) { return (cheapest_first) ? (a->get_product().price < b->get_product().price) : (a->get_product().price > b->get_product().price);});
+    return all;
 }
 
 bool LogicHandler::log_in(std::string usrname, std::string password) {
