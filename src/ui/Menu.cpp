@@ -39,7 +39,7 @@ void Menu::displayLevel(int level) {
     auto parent = getLevelParent(level);
     std::cout << parent->header;
 
-    for (auto child : parent->items) {
+    for (auto child : getCurrentChildren()) {
         if (child == getCurrentItem())
             std::cout << "\x1b[4m" << child->toString() << "\x1b[0m" << std::endl;
         else
@@ -77,7 +77,7 @@ int Menu::getCurrentKey() {
 std::shared_ptr<MenuItem> Menu::getLevelParent(int level) {
     /*
      * WARNING: this function does not give dynamically generated items
-     *  you should probably use Menu::getLevelChildren instead
+     *          you should probably use Menu::getLevelChildren instead
      */
 
     std::shared_ptr<MenuItem> parent = rootItem;
@@ -89,7 +89,9 @@ std::shared_ptr<MenuItem> Menu::getLevelParent(int level) {
     return parent;
 }
 std::vector<std::shared_ptr<MenuItem>> Menu::getLevelChildren(int level) {
-    return getLevelParent(level)->items;
+    std::vector<std::shared_ptr<MenuItem>> items(getLevelParent(level)->items);
+    items.push_back(std::make_shared<MenuItem>("Back", [this] { backMenu(); }));
+    return items;
 }
 std::vector<std::shared_ptr<MenuItem>> Menu::getCurrentChildren() {
     return getLevelChildren(getLevel());
