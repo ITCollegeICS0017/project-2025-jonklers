@@ -16,7 +16,7 @@ std::vector<std::shared_ptr<Listing>> LogicHandler::get_filtered(Category catego
 std::vector<std::shared_ptr<Listing>> LogicHandler::get_sorted(bool cheapest_first){
     //TODO
     auto all = get_all_listings();
-    std::sort(all.begin(), all.end(), [cheapest_first](const auto& a, const auto& b) { return (cheapest_first) ? (a->get_product().price < b->get_product().price) : (a->get_product().price > b->get_product().price);});
+    std::sort(all.begin(), all.end(), [cheapest_first](const auto& a, const auto& b) { return (cheapest_first) ? (a->get_price() < b->get_price()) : (a->get_price() > b->get_price());});
     return all;
 }
 
