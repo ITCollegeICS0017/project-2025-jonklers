@@ -1,4 +1,5 @@
 #include "LogicHandler.h"
+#include "../base/User.h"
 #include "../base/Auction.h"
 #include "../base/Negotiation.h"
 #include <memory>

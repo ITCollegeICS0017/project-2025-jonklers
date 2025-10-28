@@ -1,5 +1,4 @@
 #include "User.h"
-#include <memory>
 #include <vector>
 #include <openssl/evp.h>
 
@@ -69,7 +68,7 @@ void from_json(const nlohmann::json& j, User& u) {
     u.set_messages(m);
 }
 
-std::string hash_password(std::string &plaintext){
+std::string hash_password(const std::string& plaintext){
     // Create a new digest context
     EVP_MD_CTX *ctx = EVP_MD_CTX_new();
     if (!ctx)
