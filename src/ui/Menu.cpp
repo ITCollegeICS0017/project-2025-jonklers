@@ -8,7 +8,6 @@ Menu::Menu(std::vector<MenuItem> items, bool horizontal, std::vector<int> keys) 
 void Menu::run() {
     while (isRunning) {
         clearConsole();
-        std::cout << items.size();
         display();
         handleInput();
     }

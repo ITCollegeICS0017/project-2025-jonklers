@@ -22,7 +22,7 @@ void UI::mainMenu() {
     MenuItem notificationsItem("Notifications", {}, [] {  });
     MenuItem profileItem("Profile", {}, [] {  });
 
-    Menu menu({}, true, {});
+    Menu menu({}, true);
     menu.items.emplace_back(listingsItem);
     menu.items.emplace_back(notificationsItem);
     menu.items.emplace_back(profileItem);
