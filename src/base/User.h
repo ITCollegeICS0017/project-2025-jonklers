@@ -4,7 +4,6 @@
 #include "Listing.h"
 #include <vector>
 #include <memory>
-#include <openssl/evp.h>
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>

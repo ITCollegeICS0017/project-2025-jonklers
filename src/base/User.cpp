@@ -1,6 +1,7 @@
 #include "User.h"
 #include <memory>
 #include <vector>
+#include <openssl/evp.h>
 
 
 User::User(std::string user_id, Wallet wallet, BankAccount bank_account, std::vector<Message> messages) 
