@@ -5,8 +5,6 @@
 
 #include "utils.h"
 
-UI::UI() {}
-
 // Menus
 void UI::startupMenu() {
     std::vector<MenuItem> items = {
@@ -27,7 +25,8 @@ void UI::mainMenu() {
             MenuItem("Wallet", {}, [this] {walletBalanceLeaf();}),
             MenuItem("Bank", {}, [this] {bankBalanceLeaf();})
         }),
-        MenuItem("My listings", {})
+        MenuItem("My listings", {}),
+        MenuItem("My notifications", {})
     });
 
     Menu menu({}, false);
@@ -39,19 +38,31 @@ void UI::mainMenu() {
     menu.items[0].action = [this, listingsItemPtr] { updateListingsItem(listingsItemPtr); };
     MenuItem* myListingsPtr = &menu.items[2].items[1];
     menu.items[2].items[1].action = [this, myListingsPtr] {updateMyListingsItem(myListingsPtr); };
+    MenuItem* myNotisPtr = &menu.items[2].items[2];
+    menu.items[2].items[2].action = [this, myNotisPtr] { updateMyNotifications(myNotisPtr); };
 
     menu.run();
 }
-void UI::listingMenu(Listing listing) {
+void UI::listingMenu(std::shared_ptr<Listing> listing) {
     Menu menu({}, true);
 
-    menu.headerMessage = ""; // TODO: incomplete
-
-    // TODO: BUY, BID OR NEG
-    MenuItem buyItem("Buy" /* TODO: Add action to buy */);
+    menu.exitLabel = "Back";
+    menu.headerMessage = "Product: " + listing->get_product().name + "\n";
+    menu.headerMessage += "Description: " + listing->get_product().description + "\n";
+    // TODO: menu.headerMessage += "Category: " + std::to_string(listing.get_product().category) + "\n";
+    menu.headerMessage += "Price: " + std::to_string(listing->get_price()) + "\n";
+    menu.headerMessage += "Expires: " + std::to_string(listing->get_expiry()) + "\n";
 
     // TODO: only if owner
-    MenuItem deleteItem("Delete");
+    if (listing->get_owner_id() == logic.get_current_user().get_id()) {
+        MenuItem deleteItem("Delete", {}, [this] {/* TODO: Call delete action with listing id */});
+    }
+    else {
+        // TODO: or any other order type
+        MenuItem buyItem("Buy" /* TODO: Add action to buy */);
+    }
+
+    menu.run();
 }
 
 
@@ -65,9 +76,14 @@ void UI::loginLeaf() {
     std::cout << "Password: ";
     std::getline(std::cin, password);
 
-    // TODO: call action to log in user
+    bool isValid = logic.log_in(username, password);
 
-    mainMenu();
+    if (isValid)
+        mainMenu();
+    else {
+        std::cout << "Invalid username or password.\n";
+        wait();
+    }
 }
 void UI::registerLeaf() {
     std::string username;
@@ -78,16 +94,26 @@ void UI::registerLeaf() {
     std::cout << "Password: ";
     std::getline(std::cin, password);
 
-    // TODO: call action to reg user
+    bool isValid = logic.register_user(username, password);
+
+    if (isValid) {
+        mainMenu();
+    }
+    else {
+        std::cout << "Invalid username or password.\n";
+        wait();
+    }
 }
 void UI::walletBalanceLeaf() {
-    // TODO: get wallet from this.logic.logged_in_user.get_wallet().
-    std::cout << "You have {bal}{cur} in wallet provided by {prov}." << std::endl;
+    Wallet wallet = logic.get_current_user().get_wallet();
+    // TODO: add curr
+    std::cout << "You have " << wallet.balance << " in wallet provided by " << wallet.provider << "." << std::endl;
     wait();
 }
 void UI::bankBalanceLeaf() {
-    // TODO: get bank from this.logic.logged_in_user.get_bank().
-    std::cout << "You have {bal}{cur} in {prov} bank." << std::endl;
+    BankAccount bank = logic.get_current_user().get_bank_account();
+    // TODO: add curr
+    std::cout << "You have " << bank.balance << " in wallet provided by " << bank.provider << "." << std::endl;
     wait();
 }
 
@@ -102,4 +128,12 @@ void UI::updateMyListingsItem(MenuItem* myListingsItem) {
     myListingsItem->items = {};
     // listingsItem->items.emplace_back(MenuItem("Listing 1", {}, []() {  }));
     myListingsItem->items.emplace_back(MenuItem("Create Listing", {}, []() {  }));
+}
+void UI::updateMyNotifications(MenuItem* myNotifications) {
+    myNotifications->items = {};
+
+    for (auto notification : logic.get_current_user().get_messages()) {
+        MenuItem notiItem(notification.body, {}, [this] {/* TODO: get listing by id, call listingMenu with that */});
+        myNotifications->items.emplace_back(notiItem);
+    }
 }

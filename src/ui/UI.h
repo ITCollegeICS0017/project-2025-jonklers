@@ -4,11 +4,13 @@
 #include "Menu.h"
 #include <vector>
 
+#include "../logic/LogicHandler.h"
+
 class UI {
     public:
-    // TODO: reference to Logic object
+    LogicHandler logic;
 
-    UI();
+    UI() = default;
     
     void loginLeaf();
     void registerLeaf();
@@ -19,8 +21,9 @@ class UI {
     void mainMenu();
     void profileMenu(/* TODO: reference to notifications */);
     void notificationsMenu(/* TODO: reference to notifications */);
-    void listingMenu(Listing listing);
+    void listingMenu(std::shared_ptr<Listing> listing);
 
     void updateListingsItem(MenuItem* listingsItem);
     void updateMyListingsItem(MenuItem* myListingsItem);
+    void updateMyNotifications(MenuItem* myNotifications);
 };
