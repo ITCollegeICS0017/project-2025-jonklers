@@ -49,13 +49,12 @@ void UI::listingMenu(std::shared_ptr<Listing> listing) {
     menu.exitLabel = "Back";
     menu.headerMessage = "Product: " + listing->get_product().name + "\n";
     menu.headerMessage += "Description: " + listing->get_product().description + "\n";
-    // TODO: menu.headerMessage += "Category: " + std::to_string(listing.get_product().category) + "\n";
+    menu.headerMessage += "Category: " + enumToStrCategory(listing->get_product().category) + "\n";
     menu.headerMessage += "Price: " + std::to_string(listing->get_price()) + "\n";
     menu.headerMessage += "Expires: " + std::to_string(listing->get_expiry()) + "\n";
 
-    // TODO: only if owner
     if (listing->get_owner_id() == logic.get_current_user().get_id()) {
-        MenuItem deleteItem("Delete", {}, [this] {/* TODO: Call delete action with listing id */});
+        MenuItem deleteItem("Delete", {}, [this, listing] { logic.delete_listing(listing->get_listing_id()); });
     }
     else {
         // TODO: or any other order type
@@ -106,34 +105,37 @@ void UI::registerLeaf() {
 }
 void UI::walletBalanceLeaf() {
     Wallet wallet = logic.get_current_user().get_wallet();
-    // TODO: add curr
-    std::cout << "You have " << wallet.balance << " in wallet provided by " << wallet.provider << "." << std::endl;
+    std::cout << "You have " << wallet.balance << enumToStrCrypto(wallet.curr) << " in wallet provided by " << wallet.provider << "." << std::endl;
     wait();
 }
 void UI::bankBalanceLeaf() {
     BankAccount bank = logic.get_current_user().get_bank_account();
-    // TODO: add curr
-    std::cout << "You have " << bank.balance << " in wallet provided by " << bank.provider << "." << std::endl;
+    std::cout << "You have " << bank.balance << enumToStrFiat(bank.curr) << " in wallet provided by " << bank.provider << "." << std::endl;
     wait();
 }
 
 // Updates
-void UI::updateListingsItem(MenuItem* listingsItem) {
-    // TODO: call logic to get all listings and update the listingsItem
+void UI::updateListingsItem(MenuItem* listingsItem) { // TODO: might need opti
     listingsItem->items = {};
-    // listingsItem->items.emplace_back(MenuItem("Listing 1", {}, []() {  }));
+
+    for (auto listing : logic.get_all_listings()) {
+        MenuItem listingItem(listing->get_product().name, {}, [this, listing] { listingMenu(logic.get_single_listing(listing->get_listing_id())); });
+        listingsItem->items.push_back(listingItem);
+    }
 }
-void UI::updateMyListingsItem(MenuItem* myListingsItem) {
-    // TODO: call logic to get all my listings and update
+void UI::updateMyListingsItem(MenuItem* myListingsItem) { // TODO: might need opti
     myListingsItem->items = {};
-    // listingsItem->items.emplace_back(MenuItem("Listing 1", {}, []() {  }));
-    myListingsItem->items.emplace_back(MenuItem("Create Listing", {}, []() {  }));
+
+    for (auto listing : logic.get_user_listings()) {
+        MenuItem listingItem(listing->get_product().name, {}, [this, listing] { listingMenu(logic.get_single_listing(listing->get_listing_id())); });
+        myListingsItem->items.push_back(listingItem);
+    }
 }
-void UI::updateMyNotifications(MenuItem* myNotifications) {
+void UI::updateMyNotifications(MenuItem* myNotifications) { // TODO: might need opti
     myNotifications->items = {};
 
     for (auto notification : logic.get_current_user().get_messages()) {
-        MenuItem notiItem(notification.body, {}, [this] {/* TODO: get listing by id, call listingMenu with that */});
+        MenuItem notiItem(notification.body, {}, [this, notification] { listingMenu(logic.get_single_listing(notification.listing_id)); });
         myNotifications->items.emplace_back(notiItem);
     }
 }
