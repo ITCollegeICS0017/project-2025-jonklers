@@ -75,6 +75,11 @@ int Menu::getCurrentKey() {
 }
 
 std::shared_ptr<MenuItem> Menu::getLevelParent(int level) {
+    /*
+     * WARNING: this function does not give dynamically generated items
+     *  you should probably use Menu::getLevelChildren instead
+     */
+
     std::shared_ptr<MenuItem> parent = rootItem;
 
     for (int i = 0; i < level; i++) {
