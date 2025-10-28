@@ -14,14 +14,14 @@ enum class FiatCurrency { USD, EUR, CNY, JPY };
 enum class CryptoCurrency { BITCOIN, ETHERIUM, DODGECOIN, MONERO };
 
 struct Wallet{
-    std::string provider = "";
-    float balance = 0.0;
+    std::string provider = "GORILLA_MONKEY_INC";
+    float balance = 1000.0;
     CryptoCurrency curr = CryptoCurrency::BITCOIN;
 };
 
 struct BankAccount{
-    std::string provider = "";
-    float balance = 0.0;
+    std::string provider = "GORILLA_MONKEY_INC";
+    float balance = 1000.0;
     FiatCurrency curr = FiatCurrency::EUR;
 };
 

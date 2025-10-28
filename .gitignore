@@ -1,6 +1,8 @@
 # Custom
 build/
 
+storage/
+
 # Editor settings
 .vscode
 .idea
