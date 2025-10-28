@@ -10,7 +10,6 @@ public:
 
     void set_last_bidder(std::string id) { this->last_bidder_id = id;}
 
-    void bid();
 private:
     std::string last_bidder_id;
 };

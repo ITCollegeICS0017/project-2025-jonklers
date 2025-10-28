@@ -35,8 +35,8 @@ public:
     User() = default;
     User(std::string id, std::string password);
 
-    Wallet update_wallet();
-    BankAccount update_bank_account();
+    void update_wallet(bool subract, double amount);
+    void update_bank_account(bool subract, double amount);
 
     //Getters
     std::string get_id() const { return this->id; }

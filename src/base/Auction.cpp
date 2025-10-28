@@ -12,7 +12,3 @@ void from_json(const nlohmann::json& j, Auction& obj) {
     std::string id = j.at("last_bidder_id").get<std::string>();
     obj.set_last_bidder(id);
 }
-
-void bid() {
-    //TODO:
-}
