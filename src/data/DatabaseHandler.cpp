@@ -9,6 +9,9 @@
 #include <stdexcept>
 
 
+DatabaseHandler::DatabaseHandler() {
+    load_all_listings();
+}
 DatabaseHandler::DatabaseHandler(std::string usr_fp, std::string lst_file) {
     std::filesystem::path user_path(usr_fp);
     std::filesystem::path listing_path(lst_file);
@@ -17,6 +20,7 @@ DatabaseHandler::DatabaseHandler(std::string usr_fp, std::string lst_file) {
     if(!std::filesystem::is_regular_file(user_path) || !std::filesystem::is_regular_file(listing_path)) throw std::runtime_error("Database error: Supplied arguments are not regular files!");
     this->usr_filepath = usr_fp;
     this->lst_filepath = lst_file;
+    load_all_listings();
 }
 
 void DatabaseHandler::set_user_file(std::string new_path) {
