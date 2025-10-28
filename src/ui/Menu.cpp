@@ -40,7 +40,9 @@ void Menu::displayLevel(int level) {
     std::cout << parent->header;
 
     for (auto child : getCurrentChildren()) {
-        if (child == getCurrentItem())
+        if (child == getCurrentItem() ||
+            (child->label == "Back" && getCurrentItem()->label == "Back") ||
+            (child->label == "Exit" && getCurrentItem()->label == "Exit"))
             std::cout << "\x1b[4m" << child->toString() << "\x1b[0m" << std::endl;
         else
             std::cout << child->toString() << std::endl;
