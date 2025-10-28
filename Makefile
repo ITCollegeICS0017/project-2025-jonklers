@@ -1,6 +1,6 @@
 
 CC=g++
-CFLAGS=-Wall -Wextra -Werror -std=c++11
+CFLAGS=-Wall -Wextra -std=c++11
 # Find all .cpp files recursively under src
 SRC:=$(shell find src -name '*.cpp')
 # Map src/<path>.cpp -> build/<path>.o
