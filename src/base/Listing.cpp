@@ -36,7 +36,6 @@ void from_json(const nlohmann::json& j, Product& obj) {
     j.at("description").get_to(obj.description);
     j.at("category").get_to(obj.category);
 }
-//TODO:
 void Listing::conclude_sale() {
-
+    //TODO:
 }

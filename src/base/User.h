@@ -1,10 +1,9 @@
 #pragma once
 #include "../data/nlohmann/json.hpp"
+#include "Listing.h"
 #include <string>
 #include <vector>
 #include <memory>
-
-class Listing;
 
 enum class FiatCurrency { USD, EUR, CNY, JPY };
 enum class CryptoCurrency { BITCOIN, ETHERIUM, DODGECOIN, MONERO };

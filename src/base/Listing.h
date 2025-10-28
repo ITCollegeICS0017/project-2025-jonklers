@@ -15,6 +15,7 @@ struct Product {
 
 class Listing {
 public:
+    Listing() = default;
     Listing(std::string listing_id, double price, std::string owner_id, std::time_t expiry);
 
     void conclude_sale();

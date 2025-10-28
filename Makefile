@@ -3,7 +3,7 @@ CC=g++
 
 DEBUGFLAGS=-g -O0
 RELEASEFLAGS=-O2
-CFLAGS=-Wall -Wextra -std=c++11 $(DEBUGFLAGS)
+CFLAGS=-Wall -Wextra -std=c++17 $(DEBUGFLAGS)
 
 # Find all .cpp files recursively under src
 SRC:=$(shell find src -name '*.cpp')

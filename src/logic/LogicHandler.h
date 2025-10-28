@@ -1,11 +1,11 @@
 #pragma once
 #include "../data/DatabaseHandler.h"
+#include "../base/User.h"
+#include "../base/Listing.h"
 #include <memory>
 #include <string>
 #include <vector>
 
-class User;
-class Listing;
 enum class Category;
 
 class LogicHandler {
