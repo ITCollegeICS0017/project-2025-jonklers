@@ -19,5 +19,5 @@ class MenuItem : public std::enable_shared_from_this<MenuItem> {
 
     std::string toString() const;
 
-    std::shared_ptr<MenuItem> findItem(std::shared_ptr<MenuItem> target);
+    std::vector<int> findItem(std::shared_ptr<MenuItem> target, std::vector<int> keys = {});
 };

@@ -6,16 +6,19 @@ std::string MenuItem::toString() const {
     return label;
 };
 
-std::shared_ptr<MenuItem> MenuItem::findItem(std::shared_ptr<MenuItem> target) {
+std::vector<int> MenuItem::findItem(std::shared_ptr<MenuItem> target, std::vector<int> keys) {
     if (this == target.get()) {
-        return shared_from_this();
+        return keys;
     }
 
-    for (auto child : items) {
-        if (auto found = child->findItem(target)) {
+    keys.push_back(0);
+    for (std::shared_ptr<MenuItem> child : items) {
+        std::vector<int> found = child->findItem(target, keys);
+        if (!found.empty()) {
             return found;
         }
+        keys.back++;
     }
 
-    return nullptr;
+    return {};
 }
