@@ -16,19 +16,24 @@ void UI::startupMenu() {
     menu.run();
 }
 void UI::mainMenu() {
-    MenuItem listingsItem("Listings", {MenuItem("wasd")});
-    MenuItem* listingsItemPtr = &listingsItem;
-    listingsItem.action = [this, listingsItemPtr] { updateListingsItem(listingsItemPtr); };
+    MenuItem listingsItem("Listings", {MenuItem("DBG")});
     MenuItem notificationsItem("Notifications", {}, [] {  });
     MenuItem profileItem("Profile", {}, [] {  });
 
     Menu menu({}, true);
-    menu.items.emplace_back(listingsItem);
+    menu.items.push_back(listingsItem);
     menu.items.emplace_back(notificationsItem);
     menu.items.emplace_back(profileItem);
 
+    MenuItem* listingsItemPtr = &menu.items[0];
+    menu.items[0].action = [this, listingsItemPtr] { updateListingsItem(listingsItemPtr); };
+
     menu.run();
 }
+void UI::listingMenu(Listing listing) {
+
+}
+
 
 // Leafs
 void UI::loginLeaf() {
@@ -58,9 +63,7 @@ void UI::registerLeaf() {
 
 // Updates
 void UI::updateListingsItem(MenuItem* listingsItem) {
-    // listingsItem->items = {
-    //     MenuItem("Listing 1", {}, []() {  }),
-    //     MenuItem("Listing 2", {}, []() {  }),
-    //     MenuItem("Listing 3", {}, []() {  }),
-    // };
+    listingsItem->items.emplace_back(MenuItem("Listing 1", {}, []() {  }));
+    listingsItem->items.emplace_back(MenuItem("Listing 2", {}, []() {  }));
+    listingsItem->items.emplace_back(MenuItem("Listing 3", {}, []() {  }));
 }

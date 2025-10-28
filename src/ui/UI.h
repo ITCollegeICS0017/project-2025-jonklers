@@ -17,7 +17,6 @@ class UI {
     void mainMenu();
     void profileMenu(/* TODO: reference to notifications */);
     void notificationsMenu(/* TODO: reference to notifications */);
-    void listingsMenu(std::vector<Listing> listings);
     void listingMenu(Listing listing);
 
     void updateListingsItem(MenuItem* listingsItem);
