@@ -33,6 +33,13 @@ void DatabaseHandler::set_listing_file(std::string new_path) {
     this->lst_filepath = new_path;
 }
 
+void DatabaseHandler::set_archived_file(std::string new_path) {
+    std::filesystem::path listing_path(archive_filepath);
+    if(!std::filesystem::exists(listing_path)) throw std::runtime_error("Database error: Invalid file path!");
+    if(!std::filesystem::is_regular_file(listing_path)) throw std::runtime_error("Database error: Not a file!");
+    this->archive_filepath = new_path;
+}
+
 std::unique_ptr<User> DatabaseHandler::load_user(std::string id) {
     nlohmann::json j;
     std::ifstream file(this->usr_filepath);
@@ -103,4 +110,18 @@ std::unique_ptr<Listing> DatabaseHandler::load_single_listing(std::string id) {
     }else {
         return std::make_unique<Listing>();
     }
+}
+
+void DatabaseHandler::add_listing(const std::unique_ptr<Listing> l) {
+    nlohmann::json j;
+    std::ifstream infile(this->lst_filepath);
+    if(!infile.is_open()) throw std::runtime_error("Cannot open listing file!");
+    infile >> j;
+    infile.close();
+    j[l->get_listing_id()] = *l; 
+
+    std::ofstream outfile(this->lst_filepath);
+    if(!outfile.is_open()) throw std::runtime_error("Cannot open listing file!");
+    outfile << j.dump(4);
+    outfile.close();
 }

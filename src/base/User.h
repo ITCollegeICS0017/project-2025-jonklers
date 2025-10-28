@@ -14,26 +14,26 @@ enum class FiatCurrency { USD, EUR, CNY, JPY };
 enum class CryptoCurrency { BITCOIN, ETHERIUM, DODGECOIN, MONERO };
 
 struct Wallet{
-    std::string provider;
-    float balance;
-    CryptoCurrency curr;
+    std::string provider = "";
+    float balance = 0.0;
+    CryptoCurrency curr = CryptoCurrency::BITCOIN;
 };
 
 struct BankAccount{
-    std::string provider;
-    float balance;
-    FiatCurrency curr;
+    std::string provider = "";
+    float balance = 0.0;
+    FiatCurrency curr = FiatCurrency::EUR;
 };
 
 struct Message{
-    std::string body;
-    std::string listing_id; 
+    std::string body = "";
+    std::string listing_id = ""; 
 };
 
 class User {
 public:
     User() = default;
-    User(std::string id, Wallet wallet, BankAccount bank_account, std::vector<Message> messages);
+    User(std::string id, std::string password);
 
     Wallet update_wallet();
     BankAccount update_bank_account();

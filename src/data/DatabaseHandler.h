@@ -16,6 +16,7 @@ public:
     DatabaseHandler(std::string user_fp, std::string listing_fp); // file paths
     void set_user_file(std::string new_path);
     void set_listing_file(std::string new_path);
+    void set_archived_file(std::string new_path);
 
     void set_curr_usr(std::unique_ptr<User> up) { this->current_user = std::move(up); }
     void set_listings();
@@ -38,6 +39,7 @@ public:
 private:
     std::unordered_map<std::string, std::shared_ptr<Listing>> all_listings;
     std::unique_ptr<User> current_user;
-    std::string usr_filepath;
-    std::string lst_filepath;
+    std::string usr_filepath = "storage/users.json";
+    std::string lst_filepath = "sorage/active_listings.json";
+    std::string archive_filepath = "storage/archived_listings.json";
 };

@@ -4,9 +4,10 @@
 #include <openssl/evp.h>
 
 
-User::User(std::string user_id, Wallet wallet, BankAccount bank_account, std::vector<Message> messages) 
-    : id(user_id), wallet(wallet), bank_account(bank_account), messages(messages) {} 
-
+User::User(std::string id, std::string pass) {
+    this->id = id;
+    this->password_hash = hash_password(pass);
+}
 void to_json(nlohmann::json& j, const Wallet& w) {
     j = {
            {"provider", w.provider}, 
