@@ -10,7 +10,11 @@
 
 
 DatabaseHandler::DatabaseHandler() {
-    load_all_listings();
+  usr_filepath = "storage/users.json";
+  lst_filepath = "storage/listings.json";
+  archive_filepath = "storage/archive.json";
+  create_files();
+  load_all_listings();
 }
 DatabaseHandler::DatabaseHandler(std::string usr_fp, std::string lst_file) {
     std::filesystem::path user_path(usr_fp);
@@ -184,4 +188,18 @@ void DatabaseHandler::append_archive(std::shared_ptr<Listing> l) {
     if(!outfile.is_open()) throw std::runtime_error("Cannot open archive file!");
     outfile << j.dump(4);
     outfile.close();
+}
+
+void DatabaseHandler::create_files() {
+    if((std::filesystem::exists(usr_filepath) && std::filesystem::exists(lst_filepath) && std::filesystem::exists(archive_filepath))) return;
+    std::filesystem::create_directories("storage");
+    std::ofstream file(usr_filepath);
+    file << "{}";
+    file.close();
+    std::ofstream file2(lst_filepath);
+    file2 << "{}";
+    file2.close();
+    std::ofstream file3(archive_filepath);
+    file3 << "{}";
+    file3.close();
 }

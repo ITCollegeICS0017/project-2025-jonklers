@@ -28,6 +28,8 @@ public:
     void load_all_listings();
     //std::unique_ptr<Listing> load_single_listing(std::string listing_id);
 
+    void create_files();
+
     //Write
     void update_usr(const User& u);
     void register_usr(const User& u);
@@ -41,6 +43,6 @@ private:
     std::unordered_map<std::string, std::shared_ptr<Listing>> all_listings;
     std::unique_ptr<User> current_user;
     std::string usr_filepath = "storage/users.json";
-    std::string lst_filepath = "sorage/active_listings.json";
+    std::string lst_filepath = "storage/active_listings.json";
     std::string archive_filepath = "storage/archived_listings.json";
 };
