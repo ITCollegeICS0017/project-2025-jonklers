@@ -15,6 +15,7 @@ class MenuItem : public std::enable_shared_from_this<MenuItem> {
     std::string header;
     std::string footer;
 
+    explicit MenuItem(std::string label, std::function<void()> action = nullptr);
     explicit MenuItem(std::string label, std::vector<std::shared_ptr<MenuItem>> items = {}, std::function<void()> action = nullptr);
 
     std::string toString() const;
