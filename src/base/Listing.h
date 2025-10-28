@@ -18,15 +18,31 @@ public:
     Listing(std::string listing_id, double price, std::string owner_id, std::time_t expiry);
 
     void conclude_sale();
-    void set_product(std::string name, std::string description, Category category);
-    Product get_product();
+    
+    //Getters
+    double get_price() const { return this->price;}
+    std::string get_listing_id() const { return this->listing_id;}
+    std::string get_owner_id() const { return this->owner_id;}
+    std::time_t get_expiry() const { return this->expiry;}
+    Product get_product() const { return this->product;}
+    
+    //Setters
+    void set_listing_id(std::string id) {this->listing_id = id;}
+    void set_price(double price) {this->price = price;}
+    void set_owner_id(std::string id) {this->owner_id = id;}
+    void set_expiery(std::time_t time) {this->expiry = time;}
+    void set_product(Product p) {this->product = p;}
 
-    void to_json(nlohmann::json& j, const Listing& obj);
-    void from_json(const nlohmann::json& j, Listing& obj);
 protected:
-    double price;
     std::string listing_id;
-    Product product;
+    double price;
     std::string owner_id;
     std::time_t expiry;
+    Product product;
 };
+
+void to_json(nlohmann::json& j, const Listing& obj);
+void from_json(const nlohmann::json& j, Listing& obj);
+
+void to_json(nlohmann::json& j, const Product& obj);
+void from_json(const nlohmann::json& j, Product& obj);

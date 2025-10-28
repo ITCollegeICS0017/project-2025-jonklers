@@ -1,11 +1,12 @@
 #include "DatabaseHandler.h"
+#include "../base/User.h"
 #include "nlohmann/json.hpp"
 #include <filesystem>
 #include <fstream>
+#include <future>
 #include <memory>
 #include <stdexcept>
 
-using json = nlohmann::json;
 
 DatabaseHandler::DatabaseHandler(std::string usr_fp, std::string lst_file) {
     std::filesystem::path user_path(usr_fp);
@@ -31,6 +32,12 @@ void DatabaseHandler::set_listing_file(std::string new_path) {
     this->lst_filepath = new_path;
 }
 
-std::unique_ptr<User> DatabaseHandler::get_user(std::string id) {
-
+std::unique_ptr<User> DatabaseHandler::load_user(std::string id) {
+    nlohmann::json j;
+    std::ifstream file(this->usr_filepath);
+    if(!file.is_open()) throw std::runtime_error("Cannot open user file!");
+    file >> j;
+    User u = j.at(id).get<User>();
+    u.set_id(id);
+    return std::make_unique<User>(u);
 }
