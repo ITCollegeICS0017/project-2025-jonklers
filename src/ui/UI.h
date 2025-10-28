@@ -12,13 +12,15 @@ class UI {
     
     void loginLeaf();
     void registerLeaf();
-    
+    void walletBalanceLeaf();
+    void bankBalanceLeaf();
+
     void startupMenu(); 
     void mainMenu();
     void profileMenu(/* TODO: reference to notifications */);
     void notificationsMenu(/* TODO: reference to notifications */);
-    void listingsMenu(std::vector<Listing> listings);
     void listingMenu(Listing listing);
 
     void updateListingsItem(MenuItem* listingsItem);
+    void updateMyListingsItem(MenuItem* myListingsItem);
 };
