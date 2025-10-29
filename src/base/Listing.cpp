@@ -1,7 +1,22 @@
 #include "Listing.h"
+#include <ctime>
+#include <random>
 
-Listing::Listing(std::string listing_id, double price, std::string owner_id, std::time_t expiry)
-    : listing_id(listing_id), price(price), owner_id(owner_id), expiry(expiry) {}
+
+Listing::Listing(double price, std::string o_id, Product p) : price(price), owner_id(o_id), product(p), listing_id(gen_uuid()), expiry(assign_expiry()) {}
+
+std::string gen_uuid() {
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    static std::uniform_int_distribution<int> dist(0, 15);
+    static const char* hex = "0123456789ABCDEF";
+    std::string s;
+    s.reserve(16);
+    for (int i =0; i < 16; ++i) {
+        s.push_back(hex[dist(gen)]);
+    }
+    return s;
+}
 
 void to_json(nlohmann::json& j, const Listing& obj) {
     j = {

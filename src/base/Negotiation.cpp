@@ -1,7 +1,7 @@
 #include "Negotiation.h"
 #include <vector>
 
-Negotiation::Negotiation(std::string listing_id, double price, std::string owner_id, std::time_t expiry, std::vector<Offer> offers) : Listing(listing_id, price, owner_id, expiry), offers(std::move(offers)) {}
+Negotiation::Negotiation(double price, std::string owner_id, Product p) : Listing(price, owner_id, p) {}
 
 
 void to_json(nlohmann::json& j, const Offer& obj) {

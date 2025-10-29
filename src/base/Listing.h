@@ -16,7 +16,9 @@ struct Product {
 class Listing {
 public:
     Listing() = default;
-    Listing(std::string listing_id, double price, std::string owner_id, std::time_t expiry);
+    Listing(double price, std::string owner_id, Product p);
+
+    virtual std::string type() const { return "Listing";}
 
     //Getters
     double get_price() const { return this->price;}
@@ -39,6 +41,9 @@ protected:
     std::time_t expiry;
     Product product;
 };
+
+std::string gen_uuid();
+inline std::time_t assign_expiry() {return std::time(nullptr) + 10 * 60;}
 
 void to_json(nlohmann::json& j, const Listing& obj);
 void from_json(const nlohmann::json& j, Listing& obj);

@@ -17,7 +17,7 @@ public:
     bool log_in(std::string u_id, std::string passwd);
     bool register_user(std::string u_id, std::string passwd);
     //bool delete_user();
-    bool create_listing(std::string type, std::string name, std::string description, std::string category, double price);
+    bool create_listing(std::string type, std::string name, std::string description, Category category, double price);
 
 
     User& get_current_user() { return db.get_curr();}

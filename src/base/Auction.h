@@ -4,7 +4,9 @@
 class Auction: public Listing {
 public:
     Auction() = default;
-    Auction(std::string listing_id, double price, std::string owner_id, std::time_t expiry, std::string last_bidder_id);
+    Auction(double price, std::string owner_id, Product p);
+
+    std::string type() const override { return "Auction";}
 
     std::string get_last_bidder() const { return this->last_bidder_id;}
 

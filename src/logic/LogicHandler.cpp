@@ -39,13 +39,15 @@ bool LogicHandler::register_user(std::string usrname, std::string password) {
     }catch(...) {return false;}
 }
 
-bool LogicHandler::create_listing(std::string type, std::string name, std::string description, std::string category, double price){
+bool LogicHandler::create_listing(std::string type, std::string name, std::string description, Category category, double price){
+    Product p = {name, description, category};
+    std::string o_id = db.get_curr().get_id();
     if(type == "Listing") {
-        db.add_listing(std::make_unique<Listing>()); 
+        db.add_listing(std::make_unique<Listing>(price, o_id, p)); 
     }else if(type == "Auction") {
-        db.add_listing(std::make_unique<Auction>());
+        db.add_listing(std::make_unique<Auction>(price, o_id, p));
     }else if(type == "Negotiation") {
-        db.add_listing(std::make_unique<Negotiation>());
+        db.add_listing(std::make_unique<Negotiation>(price, o_id, p));
     }else {
         return false;
     }

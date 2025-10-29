@@ -1,6 +1,7 @@
 #include "Auction.h"
 
-Auction::Auction(std::string listing_id, double price, std::string owner_id, std::time_t expiry, std::string last_bidder_id) : Listing(listing_id, price, owner_id, expiry), last_bidder_id(last_bidder_id) {}
+
+Auction::Auction(double price, std::string owner_id, Product p) : Listing(price, owner_id, p)  {}
 
 void to_json(nlohmann::json& j, const Auction& obj) {
     ::to_json(j, static_cast<const Listing&>(obj));

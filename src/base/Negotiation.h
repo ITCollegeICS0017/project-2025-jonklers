@@ -11,7 +11,9 @@ struct Offer {
 class Negotiation: public Listing {
 public:
     Negotiation() = default;
-    Negotiation(std::string listing_id, double price, std::string owner_id, std::time_t expiry, std::vector<Offer> offers);
+    Negotiation(double price, std::string owner_id, Product p);
+
+    std::string type() const override { return "Negotiation";}
 
     std::vector<Offer> get_offers() const { return this->offers;}
     void set_offers(std::vector<Offer> o) { this->offers = o;}
