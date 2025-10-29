@@ -13,7 +13,7 @@ std::vector<std::shared_ptr<Listing>> LogicHandler::get_filtered(std::vector<std
     return filtered_v;
 }
 
-std::vector<std::shared_ptr<Listing>> LogicHandler::get_sorted(std::vector<std::shared_ptr<Listing>>& to_sort, bool cheapest_first){
+std::vector<std::shared_ptr<Listing>>& LogicHandler::get_sorted(std::vector<std::shared_ptr<Listing>>& to_sort, bool cheapest_first){
     std::sort(to_sort.begin(), to_sort.end(), [cheapest_first](const auto& a, const auto& b) { return (cheapest_first) ? (a->get_price() < b->get_price()) : (a->get_price() > b->get_price());});
     return to_sort;
 }
@@ -59,10 +59,15 @@ std::vector<std::shared_ptr<Listing>> LogicHandler::get_all_listings() {
     return listings;
 }
 
+std::vector<std::shared_ptr<Listing>> LogicHandler::get_archived_listings() {
+    std::vector<std::shared_ptr<Listing>> listings = db.get_archived();
+    return listings;
+}
+
 //CHECK FOR NULLPTR IN UI!!
 std::shared_ptr<Listing> LogicHandler::get_single_listing(std::string id) {
-    auto m = db.get_map();
-    return (m.find(id) != m.end()) ? m[id] : nullptr;
+    auto& m = db.get_map();
+    return  m[id];
 }
 
 bool LogicHandler::delete_listing(std::string id) {
@@ -114,5 +119,16 @@ bool LogicHandler::negotiate(std::shared_ptr<Negotiation> l, double amount) {
         o.neg_amount = amount;
         l->add_offer(o);
     }catch(...){return false;}
+    return true;
+}
+
+bool LogicHandler::delete_user() {
+    try{
+        auto usr_listings = get_user_listings();
+        for(auto l : usr_listings) {
+            delete_listing(l->get_listing_id());
+        }
+        db.delete_usr(db.get_curr());
+    }catch(...) {return false;}
     return true;
 }

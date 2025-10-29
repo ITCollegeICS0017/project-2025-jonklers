@@ -7,6 +7,7 @@
 #include <fstream>
 #include <memory>
 #include <stdexcept>
+#include <vector>
 
 
 DatabaseHandler::DatabaseHandler() {
@@ -188,6 +189,28 @@ void DatabaseHandler::append_archive(std::shared_ptr<Listing> l) {
     if(!outfile.is_open()) throw std::runtime_error("Cannot open archive file!");
     outfile << j.dump(4);
     outfile.close();
+}
+
+std::vector<std::shared_ptr<Listing>> DatabaseHandler::get_archived() {
+    nlohmann::json j;
+    std::ifstream ifile(archive_filepath);
+    if(!ifile.is_open()) throw std::runtime_error("Cannot open archive file!");
+    ifile >> j;
+    ifile.close();
+    std::vector<std::shared_ptr<Listing>> v;
+    for(auto& [id, listing] : j.items()) {
+        std::shared_ptr<Listing> l;
+        if(listing.contains("last_bidder_id")) {
+            l = std::make_shared<Listing>(listing.get<Auction>()); 
+        }else if(listing.contains("offers")) {
+            l = std::make_shared<Listing>(listing.get<Negotiation>()); 
+        }else {
+            l = std::make_shared<Listing>(listing.get<Listing>()); 
+        }
+        l->set_listing_id(id);
+        if(l->get_owner_id() == current_user->get_id())v.push_back(l);
+    }
+    return v;
 }
 
 void DatabaseHandler::create_files() {

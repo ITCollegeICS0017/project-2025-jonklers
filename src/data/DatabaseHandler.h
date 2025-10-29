@@ -38,6 +38,7 @@ public:
     void update_listings_file();
     void archive_listing(std::string l_id);
     void append_archive(std::shared_ptr<Listing> l);
+    std::vector<std::shared_ptr<Listing>> get_archived();
 
 private:
     std::unordered_map<std::string, std::shared_ptr<Listing>> all_listings;
