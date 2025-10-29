@@ -91,8 +91,27 @@ void UI::bankLeaf() {
     std::cout << "You have " << bank.balance << enumToStrFiat(bank.curr) << " in wallet provided by " << bank.provider << "." << std::endl;
     wait();
 }
-void UI::createListingLeaf(std::string type, std::string category) {
-    // TODO
+void UI::createListingLeaf(std::string type, Category category) {
+    std::string name;
+    std::string description;
+    float price;
+
+    std::cout << "Name: ";
+    std::getline(std::cin, name);
+    std::cout << "Description: ";
+    std::getline(std::cin, description);
+    std::cout << "Price: ";
+    std::cin.precision(2);
+    std::cin >> price;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    if (price > 0 && !name.empty()) {
+        // logic.create_listing(type, name, description, category, price); // TODO: uncomment on create_listing signature change
+        std::cout << "Successfully created listing." << std::endl;
+    } else {
+        std::cout << "Error while createing listing.\nMake sure to have non-empty name, price > 0\n";
+    }
+
     wait();
 }
 
@@ -103,8 +122,8 @@ void UI::addCreateListing(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> 
     for (auto type : {"Listing", "Auction", "Negotiation"}) {
         auto typeItem = std::make_shared<MenuItem>(type, [] {});
         typeItem->header = "Select sale category\n";
-        for (auto category : {"ELECTRONICS", "FASHION", "BOOKS", "HOME", "GARDEN"}) {
-            auto categoryItem = std::make_shared<MenuItem>(category, [this, type, category, menu, destination] {createListingLeaf(type, category);menu->gotoItem(destination);});
+        for (auto category : {Category::ELECTRONICS, Category::BOOKS, Category::FASHION, Category::GARDEN, Category::HOME}) {
+            auto categoryItem = std::make_shared<MenuItem>(enumToStrCategory(category), [this, type, category, menu, destination] {createListingLeaf(type, category);menu->gotoItem(destination);});
             typeItem->items.push_back(categoryItem);
         }
         createListingItem->items.push_back(typeItem);
