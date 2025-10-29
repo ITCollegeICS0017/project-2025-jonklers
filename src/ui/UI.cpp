@@ -18,7 +18,7 @@ void UI::loginLeaf() {
     std::cout << "Username: ";
     std::getline(std::cin, username);
     std::cout << "Password: ";
-    std::getline(std::cin, password);
+    password = getPassword();
 
     bool isValid = logic.log_in(username, password);
 
@@ -36,7 +36,7 @@ void UI::registerLeaf() {
     std::cout << "Username: ";
     std::getline(std::cin, username);
     std::cout << "Password: ";
-    std::getline(std::cin, password);
+    password = getPassword();
 
     bool isValid = logic.register_user(username, password);
 

@@ -108,3 +108,48 @@ void wait() {
     std::cout << "Press Enter to continue...";
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
+
+std::string getPassword() {
+    std::string password;
+    char ch;
+
+#ifdef _WIN32
+    while ((ch = _getch()) != '\r') { // '\r' is Enter on Windows
+        if (ch == '\b') { // Backspace
+            if (!password.empty()) {
+                std::cout << "\b \b";
+                password.pop_back();
+            }
+        } else {
+            password.push_back(ch);
+            std::cout << '*';
+        }
+    }
+#else
+    struct termios oldt, newt;
+    tcgetattr(STDIN_FILENO, &oldt);  // save old settings
+    newt = oldt;
+    newt.c_lflag &= ~(ECHO | ICANON);         // disable echo
+    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+
+    while (true) {
+        ch = getchar();
+        if (ch == '\n' || ch == '\r') break;
+        if (ch == 127 || ch == '\b') { // handle backspace
+            if (!password.empty()) {
+                password.pop_back();
+                std::cout << "\b \b";
+            }
+        } else {
+            password.push_back(ch);
+            std::cout << '*';
+        }
+        std::cout.flush();
+    }
+
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldt); // restore echo
+#endif
+
+    std::cout << std::endl;
+    return password;
+}
