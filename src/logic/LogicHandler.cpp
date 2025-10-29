@@ -64,7 +64,6 @@ std::vector<std::shared_ptr<Listing>> LogicHandler::get_archived_listings() {
     return listings;
 }
 
-//CHECK FOR NULLPTR IN UI!!
 std::shared_ptr<Listing> LogicHandler::get_single_listing(std::string id) {
     auto& m = db.get_map();
     return  m[id];

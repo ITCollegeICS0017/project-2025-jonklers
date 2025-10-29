@@ -6,11 +6,13 @@
 #include <filesystem>
 #include <fstream>
 #include <memory>
+#include <mutex>
+#include <thread>
 #include <stdexcept>
 #include <vector>
 
 
-DatabaseHandler::DatabaseHandler() {
+DatabaseHandler::DatabaseHandler() : check_expiry(true), worker(&DatabaseHandler::loop, this){
   usr_filepath = "storage/users.json";
   lst_filepath = "storage/listings.json";
   archive_filepath = "storage/archive.json";
@@ -28,6 +30,9 @@ DatabaseHandler::DatabaseHandler(std::string usr_fp, std::string lst_file) {
     load_all_listings();
 }
 
+void DatabaseHandler::loop() {
+
+}
 void DatabaseHandler::set_user_file(std::string new_path) {
     std::filesystem::path user_path(new_path);
     if(!std::filesystem::exists(user_path)) throw std::runtime_error("Database error: Invalid file path!");
@@ -179,12 +184,12 @@ void DatabaseHandler::archive_listing(std::string id) {
 }
 
 void DatabaseHandler::append_archive(std::shared_ptr<Listing> l) {
-    nlohmann::json j;
+    nlohmann::json j = nlohmann::json::array();
     std::ifstream ifile(archive_filepath);
     if(!ifile.is_open()) throw std::runtime_error("Cannot open archive file!");
     ifile >> j;
     ifile.close();
-    j.push_back(*l);
+    j.push_back(*l) ;
     std::ofstream outfile(archive_filepath);
     if(!outfile.is_open()) throw std::runtime_error("Cannot open archive file!");
     outfile << j.dump(4);
@@ -198,7 +203,7 @@ std::vector<std::shared_ptr<Listing>> DatabaseHandler::get_archived() {
     ifile >> j;
     ifile.close();
     std::vector<std::shared_ptr<Listing>> v;
-    for(auto& [id, listing] : j.items()) {
+    for(auto& listing : j) {
         std::shared_ptr<Listing> l;
         if(listing.contains("last_bidder_id")) {
             l = std::make_shared<Listing>(listing.get<Auction>()); 
@@ -207,7 +212,7 @@ std::vector<std::shared_ptr<Listing>> DatabaseHandler::get_archived() {
         }else {
             l = std::make_shared<Listing>(listing.get<Listing>()); 
         }
-        l->set_listing_id(id);
+        l->set_listing_id(listing["id"]);
         if(l->get_owner_id() == current_user->get_id())v.push_back(l);
     }
     return v;

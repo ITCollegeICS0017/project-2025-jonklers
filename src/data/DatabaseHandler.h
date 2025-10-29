@@ -1,10 +1,13 @@
 #pragma once
 
+#include <mutex>
 #include <unordered_map>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
+#include <thread>
+#include <atomic>
 
 
 class User;
@@ -13,6 +16,7 @@ class Listing;
 class DatabaseHandler {
 public:
     DatabaseHandler();
+    ~DatabaseHandler();
     DatabaseHandler(std::string user_fp, std::string listing_fp); // file paths
     void set_user_file(std::string new_path);
     void set_listing_file(std::string new_path);
@@ -43,6 +47,13 @@ public:
 private:
     std::unordered_map<std::string, std::shared_ptr<Listing>> all_listings;
     std::unique_ptr<User> current_user;
+
+    std::mutex mut;
+    std::atomic<bool> check_expiry;
+    std::thread worker;
+
+    void loop();
+
     std::string usr_filepath = "storage/users.json";
     std::string lst_filepath = "storage/active_listings.json";
     std::string archive_filepath = "storage/archived_listings.json";
