@@ -11,17 +11,18 @@ class UI {
     LogicHandler logic;
 
     UI() = default;
-    
+
+    void startupMenu();
     void loginLeaf();
     void registerLeaf();
-    void walletBalanceLeaf();
-    void bankBalanceLeaf();
 
-    void startupMenu(); 
     void mainMenu();
-    void listingMenu(std::shared_ptr<Listing> listing);
+    void walletLeaf();
+    void bankLeaf();
+    void createListingLeaf(std::string type, std::string category);
 
-    void updateListingsItem(MenuItem* listingsItem);
-    void updateMyListingsItem(MenuItem* myListingsItem);
-    void updateMyNotifications(MenuItem* myNotifications);
+    void addListings(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> destination, std::shared_ptr<MenuItem> parent, std::vector<std::shared_ptr<Listing>> listings);
+    void addMessages(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> destination, std::shared_ptr<MenuItem> parent, std::vector<Message> messages);
+    void addListing(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> destination, std::shared_ptr<MenuItem> parent, std::shared_ptr<Listing> listing);
+    void addCreateListing(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> destination, std::shared_ptr<MenuItem> parent);
 };
