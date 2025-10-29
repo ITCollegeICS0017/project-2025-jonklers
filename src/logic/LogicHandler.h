@@ -31,8 +31,8 @@ public:
     std::vector<std::shared_ptr<Listing>> get_user_listings();
     std::shared_ptr<Listing> get_single_listing(std::string id);
 
-    std::vector<std::shared_ptr<Listing>> get_filtered(Category category);
-    std::vector<std::shared_ptr<Listing>> get_sorted(bool descending); 
+    std::vector<std::shared_ptr<Listing>> get_filtered(std::vector<std::shared_ptr<Listing>>& to_filter, Category category);
+    std::vector<std::shared_ptr<Listing>> get_sorted(std::vector<std::shared_ptr<Listing>>& to_sort, bool descending); 
 private:
     DatabaseHandler db;
 };
