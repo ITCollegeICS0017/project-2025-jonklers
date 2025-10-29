@@ -1,71 +1,16 @@
 #include "UI.h"
 
-#include <string>
 #include <iostream>
-
 #include "utils.h"
 
-// Menus
 void UI::startupMenu() {
-    std::vector<MenuItem> items = {
-        MenuItem("Login", {}, [this] { loginLeaf(); }),
-        MenuItem("Register", {}, [this] { registerLeaf(); }),
-    };
-
-    Menu menu(items);
-    menu.run();
-}
-void UI::mainMenu() {
-    MenuItem listingsItem("Listings", {MenuItem("DBG")});
-    MenuItem notificationsItem("Notifications", {}, [] {  });
-
-    // Profile
-    MenuItem profileItem("Profile", {
-        MenuItem("Check balance", {
-            MenuItem("Wallet", {}, [this] {walletBalanceLeaf();}),
-            MenuItem("Bank", {}, [this] {bankBalanceLeaf();})
-        }),
-        MenuItem("My listings", {}),
-        MenuItem("My notifications", {})
-    });
-
-    Menu menu({}, false);
-    menu.items.push_back(listingsItem);
-    menu.items.emplace_back(notificationsItem);
-    menu.items.emplace_back(profileItem);
-
-    MenuItem* listingsItemPtr = &menu.items[0];
-    menu.items[0].action = [this, listingsItemPtr] { updateListingsItem(listingsItemPtr); };
-    MenuItem* myListingsPtr = &menu.items[2].items[1];
-    menu.items[2].items[1].action = [this, myListingsPtr] {updateMyListingsItem(myListingsPtr); };
-    MenuItem* myNotisPtr = &menu.items[2].items[2];
-    menu.items[2].items[2].action = [this, myNotisPtr] { updateMyNotifications(myNotisPtr); };
+    Menu menu(std::make_shared<MenuItem>("startupMenu", std::vector<std::shared_ptr<MenuItem>> {
+        std::make_shared<MenuItem>("Login", [this] {loginLeaf();}),
+        std::make_shared<MenuItem>("Register", [this] {registerLeaf();}),
+    }, [] {}));
 
     menu.run();
 }
-void UI::listingMenu(std::shared_ptr<Listing> listing) {
-    Menu menu({}, true);
-
-    menu.exitLabel = "Back";
-    menu.headerMessage = "Product: " + listing->get_product().name + "\n";
-    menu.headerMessage += "Description: " + listing->get_product().description + "\n";
-    menu.headerMessage += "Category: " + enumToStrCategory(listing->get_product().category) + "\n";
-    menu.headerMessage += "Price: " + std::to_string(listing->get_price()) + "\n";
-    menu.headerMessage += "Expires: " + std::to_string(listing->get_expiry()) + "\n";
-
-    if (listing->get_owner_id() == logic.get_current_user().get_id()) {
-        MenuItem deleteItem("Delete", {}, [this, listing] { logic.delete_listing(listing->get_listing_id()); });
-    }
-    else {
-        // TODO: or any other order type
-        MenuItem buyItem("Buy" /* TODO: Add action to buy */);
-    }
-
-    menu.run();
-}
-
-
-// Leafs
 void UI::loginLeaf() {
     std::string username;
     std::string password;
@@ -103,39 +48,111 @@ void UI::registerLeaf() {
         wait();
     }
 }
-void UI::walletBalanceLeaf() {
+
+
+
+
+void UI::mainMenu() {
+    auto listingsItem = std::make_shared<MenuItem>("Listings", [] {});
+    auto messagesItem = std::make_shared<MenuItem>("Messages", [] {});
+    auto profileItem = std::make_shared<MenuItem>("Profile", [] {});
+
+    auto walletItem = std::make_shared<MenuItem>("My Wallet", [this] {walletLeaf();});
+    auto bankItem = std::make_shared<MenuItem>("My Bank", [this] {bankLeaf();});
+    auto myListingsItem = std::make_shared<MenuItem>("My Listings", [] {});
+
+    profileItem->items = {walletItem, bankItem, myListingsItem};
+
+    auto menu = std::make_shared<Menu>(std::make_shared<MenuItem>("mainMenu", std::vector<std::shared_ptr<MenuItem>> {
+        listingsItem,
+        messagesItem,
+        profileItem,
+    }, [] {}));
+
+    myListingsItem->action = [this, menu, myListingsItem] {addListings(menu, myListingsItem, myListingsItem, logic.get_all_listings());};
+    myListingsItem->action();
+
+    listingsItem->action = [this, menu, listingsItem] {addListings(menu, listingsItem, listingsItem, logic.get_all_listings());};
+    listingsItem->action();
+
+    messagesItem->action = [this, menu, messagesItem] {addMessages(menu, messagesItem, messagesItem, logic.get_current_user().get_messages());};
+    messagesItem->action();
+
+    menu->run();
+}
+
+void UI::walletLeaf() {
     Wallet wallet = logic.get_current_user().get_wallet();
     std::cout << "You have " << wallet.balance << enumToStrCrypto(wallet.curr) << " in wallet provided by " << wallet.provider << "." << std::endl;
     wait();
 }
-void UI::bankBalanceLeaf() {
+void UI::bankLeaf() {
     BankAccount bank = logic.get_current_user().get_bank_account();
     std::cout << "You have " << bank.balance << enumToStrFiat(bank.curr) << " in wallet provided by " << bank.provider << "." << std::endl;
     wait();
 }
+void UI::createListingLeaf(std::string type, std::string category) {
+    // TODO
+    wait();
+}
 
-// Updates
-void UI::updateListingsItem(MenuItem* listingsItem) { // TODO: might need opti
-    listingsItem->items = {};
+void UI::addCreateListing(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> destination, std::shared_ptr<MenuItem> parent) {
+    auto createListingItem = std::make_shared<MenuItem>("Create listing", [] {});
+    createListingItem->header = "Select sale type\n";
 
-    for (auto listing : logic.get_all_listings()) {
-        MenuItem listingItem(listing->get_product().name, {}, [this, listing] { listingMenu(logic.get_single_listing(listing->get_listing_id())); });
-        listingsItem->items.push_back(listingItem);
+    for (auto type : {"Listing", "Auction", "Negotiation"}) {
+        auto typeItem = std::make_shared<MenuItem>(type, [] {});
+        typeItem->header = "Select sale category\n";
+        for (auto category : {"ELECTRONICS", "FASHION", "BOOKS", "HOME", "GARDEN"}) {
+            auto categoryItem = std::make_shared<MenuItem>(category, [this, type, category, menu, destination] {createListingLeaf(type, category);menu->gotoItem(destination);});
+            typeItem->items.push_back(categoryItem);
+        }
+        createListingItem->items.push_back(typeItem);
+    }
+
+    parent->items.push_back(createListingItem);
+}
+
+
+void UI::addListings(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> destination, std::shared_ptr<MenuItem> parent, std::vector<std::shared_ptr<Listing>> listings) {
+    parent->items.clear();
+
+    addCreateListing(menu, destination, parent);
+
+    // TODO: add filter and sort
+
+    for (auto listing : listings) {
+        auto listingItem = std::make_shared<MenuItem>(listing->get_product().name, [] {});
+        addListing(menu, destination, listingItem, listing);
+        parent->items.push_back(listingItem);
     }
 }
-void UI::updateMyListingsItem(MenuItem* myListingsItem) { // TODO: might need opti
-    myListingsItem->items = {};
+void UI::addMessages(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> destination, std::shared_ptr<MenuItem> parent, std::vector<Message> messages) {
+    parent->items.clear();
 
-    for (auto listing : logic.get_user_listings()) {
-        MenuItem listingItem(listing->get_product().name, {}, [this, listing] { listingMenu(logic.get_single_listing(listing->get_listing_id())); });
-        myListingsItem->items.push_back(listingItem);
+    for (auto message : messages) {
+        auto messageItem = std::make_shared<MenuItem>(message.body, [] {});
+        addListing(menu, destination, messageItem, logic.get_single_listing(message.listing_id));
+        if (!message.listing_id.empty()) {}
+        parent->items.push_back(messageItem);
     }
 }
-void UI::updateMyNotifications(MenuItem* myNotifications) { // TODO: might need opti
-    myNotifications->items = {};
+void UI::addListing(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> destination, std::shared_ptr<MenuItem> parent, std::shared_ptr<Listing> listing) {
+    parent->items.clear();
 
-    for (auto notification : logic.get_current_user().get_messages()) {
-        MenuItem notiItem(notification.body, {}, [this, notification] { listingMenu(logic.get_single_listing(notification.listing_id)); });
-        myNotifications->items.emplace_back(notiItem);
+    parent->header = "Name: " + listing->get_product().name + "\n";
+    parent->header = "Description: " + listing->get_product().description + "\n";
+    parent->header = "Category: " + enumToStrCategory(listing->get_product().category) + "\n";
+    parent->header = "Price: " + std::to_string(listing->get_price()) + "\n";
+    parent->header = "Expires: " + std::to_string(listing->get_expiry()) + "\n";
+
+    if (listing->get_owner_id() != logic.get_current_user().get_id()) {
+        // TODO: other buying options
+        auto buyItem = std::make_shared<MenuItem>("Buy", [] {});
+        parent->items.push_back(buyItem);
+    }
+    else {
+        auto deleteItem = std::make_shared<MenuItem>("Delete", [this, listing, menu, destination] {logic.delete_listing(listing->get_listing_id());menu->gotoItem(destination);});
+        parent->items.push_back(deleteItem);
     }
 }
