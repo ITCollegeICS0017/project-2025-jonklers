@@ -74,3 +74,4 @@ void clearConsole();
 // if no recognized key was pressed or if there was no input available.
 Key detectKey();
 void wait();
+std::string getPassword();

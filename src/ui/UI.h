@@ -19,7 +19,7 @@ class UI {
     void mainMenu();
     void walletLeaf();
     void bankLeaf();
-    void createListingLeaf(std::string type, std::string category);
+    void createListingLeaf(std::string type, Category category);
 
     void addListings(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> destination, std::shared_ptr<MenuItem> parent, std::vector<std::shared_ptr<Listing>> listings);
     void addMessages(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> destination, std::shared_ptr<MenuItem> parent, std::vector<Message> messages);
