@@ -85,7 +85,7 @@ std::shared_ptr<MenuItem> Menu::getLevelParent(int level) {
     std::shared_ptr<MenuItem> parent = rootItem;
 
     for (int i = 0; i < level; i++) {
-        parent = parent->items.at(getLevelKey(i-1));
+        parent = parent->items.at(getLevelKey(i));
     }
 
     return parent;
