@@ -106,7 +106,7 @@ void UI::createListingLeaf(std::string type, Category category) {
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     if (price > 0 && !name.empty()) {
-        // logic.create_listing(type, name, description, category, price); // TODO: uncomment on create_listing signature change
+        logic.create_listing(type, name, description, category, price);
         std::cout << "Successfully created listing." << std::endl;
     } else {
         std::cout << "Error while createing listing.\nMake sure to have non-empty name, price > 0\n";
