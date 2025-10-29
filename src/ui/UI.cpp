@@ -138,7 +138,22 @@ void UI::addListings(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> desti
 
     addCreateListing(menu, destination, parent);
 
-    // TODO: add filter and sort
+    auto sortAscItem = std::make_shared<MenuItem>("Sort by Price (Asc)", [this, menu, destination, parent, listings] {
+        addListings(menu, destination, parent, logic.get_sorted(listings, false));
+    });
+    auto sortDescItem = std::make_shared<MenuItem>("Sort by Price (Desc)", [this, menu, destination, parent, listings] {
+        addListings(menu, destination, parent, logic.get_sorted(listings, true));
+    });
+    auto filterItem = std::make_shared<MenuItem>("Filter by Category", [] {});
+    for (auto category : {Category::ELECTRONICS, Category::BOOKS, Category::FASHION, Category::GARDEN, Category::HOME}) {
+        auto categoryItem = std::make_shared<MenuItem>(enumToStrCategory(category), [this, menu, destination, parent, listings, category, filterItem] {
+            menu->gotoItem(filterItem);addListings(menu, destination, parent, logic.get_filtered(listings, category));
+        });
+        filterItem->items.push_back(categoryItem);
+    }
+    parent->items.push_back(sortAscItem);
+    parent->items.push_back(sortDescItem);
+    parent->items.push_back(filterItem);
 
     for (auto listing : listings) {
         auto listingItem = std::make_shared<MenuItem>(listing->get_product().name, [] {});
@@ -160,10 +175,10 @@ void UI::addListing(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> destin
     parent->items.clear();
 
     parent->header = "Name: " + listing->get_product().name + "\n";
-    parent->header = "Description: " + listing->get_product().description + "\n";
-    parent->header = "Category: " + enumToStrCategory(listing->get_product().category) + "\n";
-    parent->header = "Price: " + std::to_string(listing->get_price()) + "\n";
-    parent->header = "Expires: " + std::to_string(listing->get_expiry()) + "\n";
+    parent->header += "Description: " + listing->get_product().description + "\n";
+    parent->header += "Category: " + enumToStrCategory(listing->get_product().category) + "\n";
+    parent->header += "Price: " + std::to_string(listing->get_price()) + "\n";
+    parent->header += "Expires: " + std::to_string(listing->get_expiry()) + "\n";
 
     if (listing->get_owner_id() != logic.get_current_user().get_id()) {
         // TODO: other buying options
