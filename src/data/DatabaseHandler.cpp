@@ -22,8 +22,8 @@ DatabaseHandler::DatabaseHandler(std::string usr_fp, std::string lst_file) {
 
     if(!std::filesystem::exists(user_path) || !std::filesystem::exists(listing_path)) throw std::runtime_error("Database error: Invalid file paths!");
     if(!std::filesystem::is_regular_file(user_path) || !std::filesystem::is_regular_file(listing_path)) throw std::runtime_error("Database error: Supplied arguments are not regular files!");
-    this->usr_filepath = usr_fp;
-    this->lst_filepath = lst_file;
+    usr_filepath = usr_fp;
+    lst_filepath = lst_file;
     load_all_listings();
 }
 
@@ -31,26 +31,26 @@ void DatabaseHandler::set_user_file(std::string new_path) {
     std::filesystem::path user_path(new_path);
     if(!std::filesystem::exists(user_path)) throw std::runtime_error("Database error: Invalid file path!");
     if(!std::filesystem::is_regular_file(user_path)) throw std::runtime_error("Database error: Not a file!");
-    this->usr_filepath = new_path;
+    usr_filepath = new_path;
 }
 
 void DatabaseHandler::set_listing_file(std::string new_path) {
     std::filesystem::path listing_path(lst_filepath);
     if(!std::filesystem::exists(listing_path)) throw std::runtime_error("Database error: Invalid file path!");
     if(!std::filesystem::is_regular_file(listing_path)) throw std::runtime_error("Database error: Not a file!");
-    this->lst_filepath = new_path;
+    lst_filepath = new_path;
 }
 
 void DatabaseHandler::set_archived_file(std::string new_path) {
     std::filesystem::path listing_path(archive_filepath);
     if(!std::filesystem::exists(listing_path)) throw std::runtime_error("Database error: Invalid file path!");
     if(!std::filesystem::is_regular_file(listing_path)) throw std::runtime_error("Database error: Not a file!");
-    this->archive_filepath = new_path;
+    archive_filepath = new_path;
 }
 
 std::unique_ptr<User> DatabaseHandler::load_user(std::string id) {
     nlohmann::json j;
-    std::ifstream file(this->usr_filepath);
+    std::ifstream file(usr_filepath);
     if(!file.is_open()) throw std::runtime_error("Cannot open user file!");
     file >> j;
     file.close();
@@ -61,14 +61,14 @@ std::unique_ptr<User> DatabaseHandler::load_user(std::string id) {
 
 void DatabaseHandler::update_usr(const User& u) {
     nlohmann::json j;
-    std::ifstream infile(this->usr_filepath);
+    std::ifstream infile(usr_filepath);
     if(!infile.is_open()) throw std::runtime_error("Cannot open user file!");
     infile >> j;
     infile.close();
     if(!j.contains(u.get_id())) throw std::runtime_error("User doesn't exist!");
     j[u.get_id()] = u;
 
-    std::ofstream outfile(this->usr_filepath);
+    std::ofstream outfile(usr_filepath);
     if(!outfile.is_open()) throw std::runtime_error("Cannot open user file!");
     outfile << j.dump(4);
     outfile.close();
@@ -76,14 +76,14 @@ void DatabaseHandler::update_usr(const User& u) {
 
 void DatabaseHandler::delete_usr(const User& u) {
     nlohmann::json j;
-    std::ifstream infile(this->usr_filepath);
+    std::ifstream infile(usr_filepath);
     if(!infile.is_open()) throw std::runtime_error("Cannot open user file!");
     infile >> j;
     infile.close();
     if(!j.contains(u.get_id())) throw std::runtime_error("User doesn't exist!"); //sanity check
     j.erase(u.get_id());
 
-    std::ofstream outfile(this->usr_filepath);
+    std::ofstream outfile(usr_filepath);
     if(!outfile.is_open()) throw std::runtime_error("Cannot open user file!");
     outfile << j.dump(4);
     outfile.close();
@@ -91,14 +91,14 @@ void DatabaseHandler::delete_usr(const User& u) {
 
 void DatabaseHandler::register_usr(const User& u) {
     nlohmann::json j;
-    std::ifstream infile(this->usr_filepath);
+    std::ifstream infile(usr_filepath);
     if(!infile.is_open()) throw std::runtime_error("Cannot open user file!");
     infile >> j;
     infile.close();
     if(j.contains(u.get_id())) throw std::runtime_error("User already exist!"); //sanity check
     j[u.get_id()] = u;
 
-    std::ofstream outfile(this->usr_filepath);
+    std::ofstream outfile(usr_filepath);
     if(!outfile.is_open()) throw std::runtime_error("Cannot open user file!");
     outfile << j.dump(4);
     outfile.close();
@@ -138,7 +138,7 @@ void DatabaseHandler::add_listing(std::shared_ptr<Listing> l) {
 
 void DatabaseHandler::load_all_listings() {
     nlohmann::json j;
-    std::ifstream infile(this->lst_filepath);
+    std::ifstream infile(lst_filepath);
     if(!infile.is_open()) throw std::runtime_error("Cannot open listing file!");
     infile >> j;
     infile.close();
@@ -158,7 +158,7 @@ void DatabaseHandler::load_all_listings() {
 
 void DatabaseHandler::update_listings_file() {
     nlohmann::json j;
-    std::ofstream outfile(this->lst_filepath);
+    std::ofstream outfile(lst_filepath);
     if(!outfile.is_open()) throw std::runtime_error("Cannot open listing file!");
     for(const auto& [id, obj] : all_listings) {
         j[id] = *obj;
@@ -179,12 +179,12 @@ void DatabaseHandler::archive_listing(std::string id) {
 
 void DatabaseHandler::append_archive(std::shared_ptr<Listing> l) {
     nlohmann::json j;
-    std::ifstream ifile(this->archive_filepath);
+    std::ifstream ifile(archive_filepath);
     if(!ifile.is_open()) throw std::runtime_error("Cannot open archive file!");
     ifile >> j;
     ifile.close();
     j.push_back(*l);
-    std::ofstream outfile(this->archive_filepath);
+    std::ofstream outfile(archive_filepath);
     if(!outfile.is_open()) throw std::runtime_error("Cannot open archive file!");
     outfile << j.dump(4);
     outfile.close();

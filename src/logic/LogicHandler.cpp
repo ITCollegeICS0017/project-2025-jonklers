@@ -69,7 +69,7 @@ std::shared_ptr<Listing> LogicHandler::get_single_listing(std::string id) {
 }
 
 bool LogicHandler::delete_listing(std::string id) {
-    auto m = db.get_map();
+    auto& m = db.get_map();
     if(m.find(id) == m.end()) return false; //error? delete unexistent listing - catch it in ui and display something like "Already deleted" if this happens ever
     m.erase(id);
     try{
