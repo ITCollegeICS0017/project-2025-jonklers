@@ -48,6 +48,17 @@ void UI::registerLeaf() {
         wait();
     }
 }
+void UI::buyLeaf(std::string method, std::shared_ptr<Listing> listing, std::shared_ptr<Menu> menu) {
+    bool res = logic.conclude_sale(listing, method);
+
+    if (res) {
+        std::cout << "Successfully concluded sale.\n";
+        wait();
+        std::cout << "Error concluding sale.\n";
+    }
+    wait();
+    menu->gotoItem(menu->rootItem);
+}
 
 
 
@@ -181,9 +192,18 @@ void UI::addListing(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> destin
     parent->header += "Expires: " + std::to_string(listing->get_expiry()) + "\n";
 
     if (listing->get_owner_id() != logic.get_current_user().get_id()) {
-        // TODO: other buying options
         auto buyItem = std::make_shared<MenuItem>("Buy", [] {});
-        parent->items.push_back(buyItem);
+        for (auto method : {"Wallet", "BankAccount"}) {
+            auto methodItem = std::make_shared<MenuItem>(method, [this, menu, method, listing] {buyLeaf(method, listing, menu);});
+            buyItem->items.push_back(methodItem);
+        }
+
+        if (listing->type() == "Listing") {
+            parent->items.push_back(buyItem);
+        } else if (listing->type() == "Auction") {
+            parent->items.push_back(buyItem);
+        } else if (listing->type() == "Negotiation") {
+        }
     }
     else {
         auto deleteItem = std::make_shared<MenuItem>("Delete", [this, listing, menu, destination] {logic.delete_listing(listing->get_listing_id());menu->gotoItem(destination);});
