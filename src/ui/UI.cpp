@@ -53,9 +53,9 @@ void UI::buyLeaf(std::string method, std::shared_ptr<Listing> listing, std::shar
 
     if (res) {
         std::cout << "Successfully concluded sale.\n";
-        wait();
-        std::cout << "Error concluding sale.\n";
     }
+    else
+        std::cout << "Error concluding sale.\n";
     wait();
     menu->gotoItem(menu->rootItem);
 }
@@ -70,9 +70,9 @@ void UI::bidLeaf(std::string method, std::shared_ptr<Listing> listing, std::shar
 
     if (res) {
         std::cout << "Successfully bid on listing.\n";
-        wait();
-        std::cout << "Error bidding on listing.\n";
     }
+    else
+        std::cout << "Error bidding on listing.\n";
     wait();
     menu->gotoItem(menu->rootItem);
 }
@@ -87,9 +87,9 @@ void UI::negotiateLeaf(std::string method, std::shared_ptr<Listing> listing, std
 
     if (res) {
         std::cout << "Successfully made offer on listing.\n";
-        wait();
-        std::cout << "Error making offer for listing.\n";
     }
+    else
+        std::cout << "Error making offer for listing.\n";
     wait();
     menu->gotoItem(menu->rootItem);
 }
@@ -114,7 +114,7 @@ void UI::mainMenu() {
         profileItem,
     }, [] {}));
 
-    myListingsItem->action = [this, menu, myListingsItem] {addListings(menu, myListingsItem, myListingsItem, logic.get_all_listings());};
+    myListingsItem->action = [this, menu, myListingsItem] {addListings(menu, myListingsItem, myListingsItem, logic.get_user_listings());};
     myListingsItem->action();
 
     listingsItem->action = [this, menu, listingsItem] {addListings(menu, listingsItem, listingsItem, logic.get_all_listings());};
