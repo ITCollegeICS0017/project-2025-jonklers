@@ -59,6 +59,40 @@ void UI::buyLeaf(std::string method, std::shared_ptr<Listing> listing, std::shar
     wait();
     menu->gotoItem(menu->rootItem);
 }
+void UI::bidLeaf(std::string method, std::shared_ptr<Listing> listing, std::shared_ptr<Menu> menu) {
+    double price;
+    std::cout << "Bid price: ";
+    std::cin.precision(2);
+    std::cin >> price;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    bool res = logic.place_bid(std::dynamic_pointer_cast<Auction>(listing), price); // TODO: make sure logic implements payment method
+
+    if (res) {
+        std::cout << "Successfully bid on listing.\n";
+        wait();
+        std::cout << "Error bidding on listing.\n";
+    }
+    wait();
+    menu->gotoItem(menu->rootItem);
+}
+void UI::negotiateLeaf(std::string method, std::shared_ptr<Listing> listing, std::shared_ptr<Menu> menu) {
+    double price;
+    std::cout << "Offer price: ";
+    std::cin.precision(2);
+    std::cin >> price;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    bool res = logic.negotiate(std::dynamic_pointer_cast<Negotiation>(listing), price); // TODO: make sure logic implements payment method
+
+    if (res) {
+        std::cout << "Successfully made offer on listing.\n";
+        wait();
+        std::cout << "Error making offer for listing.\n";
+    }
+    wait();
+    menu->gotoItem(menu->rootItem);
+}
 
 
 
@@ -193,16 +227,28 @@ void UI::addListing(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> destin
 
     if (listing->get_owner_id() != logic.get_current_user().get_id()) {
         auto buyItem = std::make_shared<MenuItem>("Buy", [] {});
+        auto bidItem = std::make_shared<MenuItem>("Bid", [] {});
+        auto negotiateItem = std::make_shared<MenuItem>("Negotiate", [] {});
         for (auto method : {"Wallet", "BankAccount"}) {
             auto methodItem = std::make_shared<MenuItem>(method, [this, menu, method, listing] {buyLeaf(method, listing, menu);});
             buyItem->items.push_back(methodItem);
+        }
+        for (auto method : {"Wallet", "BankAccount"}) {
+            auto methodItem = std::make_shared<MenuItem>(method, [this, menu, method, listing] {bidLeaf(method, listing, menu);});
+            bidItem->items.push_back(methodItem);
+        }
+        for (auto method : {"Wallet", "BankAccount"}) {
+            auto methodItem = std::make_shared<MenuItem>(method, [this, menu, method, listing] {negotiateLeaf(method, listing, menu);});
+            negotiateItem->items.push_back(methodItem);
         }
 
         if (listing->type() == "Listing") {
             parent->items.push_back(buyItem);
         } else if (listing->type() == "Auction") {
-            parent->items.push_back(buyItem);
+            parent->items.push_back(bidItem);
         } else if (listing->type() == "Negotiation") {
+            parent->items.push_back(buyItem);
+            parent->items.push_back(negotiateItem);
         }
     }
     else {

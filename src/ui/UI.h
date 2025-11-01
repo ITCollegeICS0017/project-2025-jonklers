@@ -21,6 +21,8 @@ class UI {
     void bankLeaf();
     void createListingLeaf(std::string type, Category category);
     void buyLeaf(std::string method, std::shared_ptr<Listing> listing, std::shared_ptr<Menu> menu);
+    void bidLeaf(std::string method, std::shared_ptr<Listing> listing, std::shared_ptr<Menu> menu);
+    void negotiateLeaf(std::string method, std::shared_ptr<Listing> listing, std::shared_ptr<Menu> menu);
 
     void addListings(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> destination, std::shared_ptr<MenuItem> parent, std::vector<std::shared_ptr<Listing>> listings);
     void addMessages(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> destination, std::shared_ptr<MenuItem> parent, std::vector<Message> messages);
