@@ -57,7 +57,7 @@ void UI::buyLeaf(std::string method, std::shared_ptr<Listing> listing, std::shar
     else
         std::cout << "Error concluding sale.\n";
     wait();
-    menu->gotoItem(menu->rootItem);
+    menu->keys = {0};
 }
 void UI::bidLeaf(std::string method, std::shared_ptr<Listing> listing, std::shared_ptr<Menu> menu) {
     double price;
@@ -74,7 +74,7 @@ void UI::bidLeaf(std::string method, std::shared_ptr<Listing> listing, std::shar
     else
         std::cout << "Error bidding on listing.\n";
     wait();
-    menu->gotoItem(menu->rootItem);
+    menu->keys = {0};
 }
 void UI::negotiateLeaf(std::string method, std::shared_ptr<Listing> listing, std::shared_ptr<Menu> menu) {
     double price;
@@ -91,7 +91,7 @@ void UI::negotiateLeaf(std::string method, std::shared_ptr<Listing> listing, std
     else
         std::cout << "Error making offer for listing.\n";
     wait();
-    menu->gotoItem(menu->rootItem);
+    menu->keys = {0};
 }
 
 
