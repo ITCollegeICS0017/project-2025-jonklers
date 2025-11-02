@@ -312,8 +312,8 @@ void UI::addMessages(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> desti
 
     for (auto message : messages) {
         auto messageItem = std::make_shared<MenuItem>(message.body, [] {});
-        addListing(menu, destination, messageItem, logic.get_single_listing(message.listing_id));
-        if (!message.listing_id.empty()) {}
+        //addListing(menu, destination, messageItem, logic.get_single_listing(message.listing_id));
+        //if (!message.listing_id.empty()) {}
         parent->items.push_back(messageItem);
     }
 }
