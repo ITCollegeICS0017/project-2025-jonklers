@@ -35,6 +35,7 @@ public:
     void set_expiery(std::time_t time) {this->expiry = time;}
     void set_product(Product p) {this->product = p;}
 
+    bool expired = false;
 protected:
     std::string listing_id;
     double price;

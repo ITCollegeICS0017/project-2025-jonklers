@@ -77,25 +77,26 @@ public:
     void update_wallet(bool subract, double amount);
     void update_bank_account(bool subract, double amount);
     void update_balance(bool subtract, double amount);
+    inline void append_message(Message m) { this->messages.push_back(m); }
     void move_reserved(bool to_reserve, double amount);
 
     //Getters
-    std::string get_id() const { return this->id; }
-    std::string get_password() const { return this->password_hash; }
-    double get_balance() const { return this->balance; }
-    double get_reserved() const { return this->reserved; }
-    Wallet get_wallet() const { return this->wallet; }
-    BankAccount get_bank_account() const { return this->bank_account; }
-    std::vector<Message> get_messages() const { return this->messages; }
+    inline std::string get_id() const { return this->id; }
+    inline std::string get_password() const { return this->password_hash; }
+    inline double get_balance() const { return this->balance; }
+    inline double get_reserved() const { return this->reserved; }
+    inline Wallet get_wallet() const { return this->wallet; }
+    inline BankAccount get_bank_account() const { return this->bank_account; }
+    inline std::vector<Message> get_messages() const { return this->messages; }
 
     //Setters
-    void set_id(std::string id) { this->id = id; }
-    void set_balance(double ammount) { (ammount > 0) ? this->balance = ammount : this->balance = 0; }
-    void set_reserved(double amount) { this->reserved = amount; }
-    void set_password(std::string password) { this->password_hash = password; }
-    void set_wallet(Wallet wallet) { this->wallet = wallet; }
-    void set_bank_account(BankAccount ba) { this->bank_account = ba; }
-    void set_messages(std::vector<Message> msg) { this->messages = msg; }
+    inline void set_id(std::string id) { this->id = id; }
+    inline void set_balance(double ammount) { (ammount > 0) ? this->balance = ammount : this->balance = 0; }
+    inline void set_reserved(double amount) { this->reserved = amount; }
+    inline void set_password(std::string password) { this->password_hash = password; }
+    inline void set_wallet(Wallet wallet) { this->wallet = wallet; }
+    inline void set_bank_account(BankAccount ba) { this->bank_account = ba; }
+    inline void set_messages(std::vector<Message> msg) { this->messages = msg; }
 
 private:
     std::string id; 
@@ -105,6 +106,7 @@ private:
     Wallet wallet;
     BankAccount bank_account;
     std::vector<Message> messages;
+
 };
 
 std::string hash_password(const std::string &plaintext);
