@@ -5,7 +5,7 @@
 
 struct Offer {
     std::string sender_id;
-    std::string neg_amount;
+    double neg_amount;
 };
 
 class Negotiation: public Listing {
@@ -16,6 +16,7 @@ public:
     std::string type() const override { return "Negotiation";}
 
     std::vector<Offer> get_offers() const { return this->offers;}
+    void delete_offer(std::string sender_id);
     void set_offers(std::vector<Offer> o) { this->offers = o;}
 
     void add_offer(Offer o) {offers.push_back(o);}

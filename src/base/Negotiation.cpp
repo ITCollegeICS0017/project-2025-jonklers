@@ -26,3 +26,14 @@ void from_json(const nlohmann::json& j, Negotiation& obj) {
     std::vector<Offer> o = j.at("offers").get<std::vector<Offer>>();
     obj.set_offers(o);
 }
+
+void Negotiation::delete_offer(std::string sender_id) {
+    offers.erase(
+        std::remove_if(
+            offers.begin(),
+            offers.end(),
+            [&sender_id](const Offer& o) { return o.sender_id == sender_id; }
+        ),
+        offers.end()
+    );
+}
