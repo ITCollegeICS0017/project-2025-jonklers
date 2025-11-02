@@ -132,12 +132,12 @@ void UI::mainMenu() {
 
 void UI::walletLeaf() {
     Wallet wallet = logic.get_current_user().get_wallet();
-    std::cout << "You have " << wallet.balance << enumToStrCrypto(wallet.curr) << " in wallet provided by " << wallet.provider << "." << std::endl;
+    std::cout << "You have " << wallet.balance << CurrencyToString(wallet.curr) << " in wallet provided by " << wallet.provider << "." << std::endl;
     wait();
 }
 void UI::bankLeaf() {
     BankAccount bank = logic.get_current_user().get_bank_account();
-    std::cout << "You have " << bank.balance << enumToStrFiat(bank.curr) << " in wallet provided by " << bank.provider << "." << std::endl;
+    std::cout << "You have " << bank.balance << CurrencyToString(bank.curr) << " in wallet provided by " << bank.provider << "." << std::endl;
     wait();
 }
 void UI::createListingLeaf(std::string type, Category category) {

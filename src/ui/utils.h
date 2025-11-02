@@ -22,34 +22,6 @@ inline std::string enumToStrCategory(Category e) {
             return "NONE";
     }
 }
-inline std::string enumToStrFiat(FiatCurrency e) {
-    switch (e) {
-        case FiatCurrency::CNY:
-            return "CNY";
-        case FiatCurrency::EUR:
-            return "EUR";
-        case FiatCurrency::JPY:
-            return "JPY";
-        case FiatCurrency::USD:
-            return "USD";
-        default:
-            return "NONE";
-    }
-}
-inline std::string enumToStrCrypto(CryptoCurrency e) {
-    switch (e) {
-        case CryptoCurrency::BITCOIN:
-            return "BITCOIN";
-        case CryptoCurrency::DODGECOIN:
-            return "DODGECOIN";
-        case CryptoCurrency::ETHERIUM:
-            return "ETHERIUM";
-        case CryptoCurrency::MONERO:
-            return "MONERO";
-        default:
-            return "NONE";
-    }
-}
 
 // Keys that detectArrowKey can return
 enum class Key {
