@@ -32,6 +32,10 @@ public:
     std::vector<std::shared_ptr<Listing>> get_archived_listings();
     std::shared_ptr<Listing> get_single_listing(std::string id);
 
+    inline double to_gorilla_coin(Currency c, double ammount) { return ammount * CONVERSION_RATE.at(CurrencyToString(c)); }
+
+    bool recharge_balance(std::string mehtod, double ammount);
+
     std::vector<std::shared_ptr<Listing>> get_filtered(std::vector<std::shared_ptr<Listing>> to_filter, Category category);
     std::vector<std::shared_ptr<Listing>>& get_sorted(std::vector<std::shared_ptr<Listing>> to_sort, bool descending);
 private:

@@ -11,8 +11,8 @@
 
 class Listing;
 
-enum class Currency { USD, EUR, CNY, JPY, BTC, ETH, DOGE, XMR };
-inline const std::string CurrencyToString(Currency c) {
+enum class Currency { USD, EUR, CNY, JPY, BTC, ETH, DOGE, XMR, GC };
+inline std::string CurrencyToString(Currency c) {
     switch(c){
         case Currency::USD: return "USD";
         case Currency::EUR: return "EUR";
@@ -22,6 +22,7 @@ inline const std::string CurrencyToString(Currency c) {
         case Currency::ETH: return "ETH";
         case Currency::DOGE: return "DOGE";
         case Currency::XMR: return "XMR";
+        case Currency::GC: return "GC";
         default: return "";
     } 
 }
@@ -62,6 +63,8 @@ public:
 
     void update_wallet(bool subract, double amount);
     void update_bank_account(bool subract, double amount);
+    void update_balance(bool subtract, double amount);
+    void move_reserved(bool to_reserve, double amount);
 
     //Getters
     std::string get_id() const { return this->id; }
@@ -83,6 +86,7 @@ private:
     std::string id; 
     std::string password_hash;
     double balance = 0;
+    double reserved = 0;
     Wallet wallet;
     BankAccount bank_account;
     std::vector<Message> messages;

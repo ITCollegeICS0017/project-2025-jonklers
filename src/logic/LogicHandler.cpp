@@ -91,32 +91,20 @@ std::vector<std::shared_ptr<Listing>> LogicHandler::get_user_listings() {
 bool LogicHandler::conclude_sale(std::shared_ptr<Listing> l, std::string method) {
     auto& buyer = db.get_curr();
     auto seller = *db.load_user(l->get_owner_id());
-    if(method == "Wallet"){
-        if(buyer.get_wallet().balance < l->get_price()) return false;
-        buyer.update_wallet(true, l->get_price());
-        seller.update_wallet(false, l->get_price());
-    }else if(method == "BankAccount"){
-        if(buyer.get_bank_account().balance < l->get_price()) return false;
-        buyer.update_bank_account(true, l->get_price());
-        seller.update_bank_account(false, l->get_price());
-    }else{
-        return false;
-    }
+    if(buyer.get_balance() < l->get_price()) return false;
+    buyer.update_balance(true, l->get_price());
+    seller.update_balance(false, l->get_price());
     db.update_usr(buyer);
     db.update_usr(seller);
     db.archive_listing(l->get_listing_id());
     return true;
 }
 
+//TODO::
 bool LogicHandler::place_bid(std::shared_ptr<Auction> l, std::string method, double amount) {
-    if(method == "Wallet"){
-        if(db.get_curr().get_wallet().balance < l->get_price()) return false;
-    }else if(method == "BankAccount"){
-        if(db.get_curr().get_bank_account().balance < l->get_price()) return false;
-    }else{
-        return false;
-    }
-
+    auto& u = get_current_user();
+    if(u.get_balance() < l->get_price()) return false;
+    u.move_reserved(true, amount);
     l->set_price(amount);
     l->set_last_bidder(db.get_curr().get_id());
     return true;
@@ -141,4 +129,17 @@ bool LogicHandler::delete_user() {
         db.delete_usr(db.get_curr());
     }catch(...) {return false;}
     return true;
+}
+
+bool LogicHandler::recharge_balance(std::string method, double amount) {
+    auto& u = get_current_user();
+    if(method == "Wallet") {
+        u.update_wallet(true, amount);
+        u.update_balance(false, to_gorilla_coin(u.get_wallet().curr, amount));
+        return true;
+    }else if(method == "BankAccount") {
+        u.update_bank_account(true, amount);
+        u.update_balance(false, to_gorilla_coin(u.get_bank_account().curr, amount));
+        return true;
+    }else return false;
 }

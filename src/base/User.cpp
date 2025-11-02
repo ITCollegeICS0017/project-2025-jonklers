@@ -105,6 +105,8 @@ std::string hash_password(const std::string& plaintext){
     return oss.str();
 }
 
+
+
 void User::update_wallet(bool subtract, double amount) {
     if(subtract) {
         wallet.balance -= amount;
@@ -115,4 +117,17 @@ void User::update_bank_account(bool subtract, double amount) {
     if(subtract) {
         bank_account.balance -= amount;
     }else bank_account.balance += amount;
+}
+
+void User::update_balance(bool subract, double amount) {
+    if(subract) {
+        balance -= amount;
+    } else balance  += amount;
+}
+
+void User::move_reserved(bool to_reserve, double amount) {
+    if(to_reserve) {
+        balance -= amount;
+        reserved += amount;
+    } else balance += amount; reserved -= amount;
 }
