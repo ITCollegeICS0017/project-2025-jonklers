@@ -149,7 +149,13 @@ void DatabaseHandler::update_listings_file() {
     std::ofstream outfile(lst_filepath);
     if(!outfile.is_open()) throw std::runtime_error("Cannot open listing file!");
     for(const auto& [id, obj] : all_listings) {
-        j[id] = *obj;
+        if (obj->type() == "Auction") {
+            j[id] = *std::dynamic_pointer_cast<Auction>(obj);
+        } else if (obj->type() == "Negotiation") {
+            j[id] = *std::dynamic_pointer_cast<Negotiation>(obj);
+        } else {
+            j[id] = *obj;
+        }
     }
     outfile << j.dump(4);
     outfile.close();

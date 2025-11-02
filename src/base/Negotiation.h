@@ -24,8 +24,8 @@ private:
     std::vector<Offer> offers;
 };
 
-void to_json(nlohmann::json& j, const Negotiation& obj);
-void from_json(const nlohmann::json& j, Negotiation& obj);
-
 void to_json(nlohmann::json& j, const Offer& obj);
 void from_json(const nlohmann::json& j, Offer& obj);
+
+void to_json(nlohmann::json& j, const Negotiation& obj);
+void from_json(const nlohmann::json& j, Negotiation& obj);

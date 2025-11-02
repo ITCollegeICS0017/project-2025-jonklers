@@ -23,8 +23,7 @@ void to_json(nlohmann::json& j, const Negotiation& obj) {
 
 void from_json(const nlohmann::json& j, Negotiation& obj) {
     ::from_json(j, static_cast<Listing&>(obj));
-    std::vector<Offer> o = j.at("offers").get<std::vector<Offer>>();
-    obj.set_offers(o);
+    obj.set_offers(j.value("offers", std::vector<Offer>{}));
 }
 
 void Negotiation::delete_offer(std::string sender_id) {
