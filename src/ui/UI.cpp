@@ -66,7 +66,7 @@ void UI::bidLeaf(std::string method, std::shared_ptr<Listing> listing, std::shar
     std::cin >> price;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-    bool res = logic.place_bid(std::dynamic_pointer_cast<Auction>(listing), price); // TODO: make sure logic implements payment method
+    bool res = logic.place_bid(std::dynamic_pointer_cast<Auction>(listing), "", price); // TODO: make sure logic implements payment method
 
     if (res) {
         std::cout << "Successfully bid on listing.\n";
@@ -83,7 +83,7 @@ void UI::negotiateLeaf(std::string method, std::shared_ptr<Listing> listing, std
     std::cin >> price;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-    bool res = logic.negotiate(std::dynamic_pointer_cast<Negotiation>(listing), price); // TODO: make sure logic implements payment method
+    bool res = logic.negotiate(std::dynamic_pointer_cast<Negotiation>(listing), "", price); // TODO: make sure logic implements payment method
 
     if (res) {
         std::cout << "Successfully made offer on listing.\n";

@@ -6,6 +6,7 @@
 #include <filesystem>
 #include <fstream>
 #include <memory>
+#include <iostream>
 #include <mutex>
 #include <thread>
 #include <stdexcept>
@@ -178,8 +179,8 @@ void DatabaseHandler::update_listings_file() {
 void DatabaseHandler::archive_listing(std::string id) {
     if(all_listings.find(id) == all_listings.end()) throw std::runtime_error("Listing doesn't exist!"); 
     auto l = all_listings[id];
-    all_listings.erase(id);
     append_archive(l);
+    all_listings.erase(id);
     update_listings_file();
 }
 
