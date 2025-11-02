@@ -3,6 +3,7 @@
 #include <openssl/evp.h>
 
 
+
 User::User(std::string id, std::string pass) {
     this->id = id;
     this->password_hash = hash_password(pass);
@@ -10,28 +11,28 @@ User::User(std::string id, std::string pass) {
 void to_json(nlohmann::json& j, const Wallet& w) {
     j = {
            {"provider", w.provider}, 
-           {"balance", w.balance}, 
+           {"w_balance", w.balance}, 
            {"currency", w.curr}
     };
 }
 
 void from_json(const nlohmann::json& j, Wallet& w) {
     j.at("provider").get_to(w.provider);
-    j.at("balance").get_to(w.balance);
+    j.at("w_balance").get_to(w.balance);
     j.at("currency").get_to(w.curr);
 }
 
 void to_json(nlohmann::json& j, const BankAccount& b) {
     j = {
            {"provider", b.provider}, 
-           {"balance", b.balance}, 
+           {"b_balance", b.balance}, 
            {"currency", b.curr}
     };
 }
 
 void from_json(const nlohmann::json& j, BankAccount& b) {
     j.at("provider").get_to(b.provider);
-    j.at("balance").get_to(b.balance);
+    j.at("b_balance").get_to(b.balance);
     j.at("currency").get_to(b.curr);
 }
 
@@ -50,6 +51,7 @@ void from_json(const nlohmann::json& j, Message& m) {
 void to_json(nlohmann::json& j, const User& u) {
     j = {
         {"password", u.get_password()},
+        {"balance", u.get_balance()},
         {"wallet", u.get_wallet()},
         {"bank_account", u.get_bank_account()},
         {"messages", u.get_messages()}
@@ -58,11 +60,13 @@ void to_json(nlohmann::json& j, const User& u) {
 
 void from_json(const nlohmann::json& j, User& u) {
     std::string pw = j.at("password").get<std::string>();
+    double bal = j.at("balance").get<double>();
     Wallet w = j.at("wallet").get<Wallet>();
     BankAccount b = j.at("bank_account").get<BankAccount>();
     std::vector<Message> m = j.at("messages").get<std::vector<Message>>();
 
     u.set_password(pw);
+    u.set_balance(bal);
     u.set_wallet(w);
     u.set_bank_account(b);
     u.set_messages(m);
