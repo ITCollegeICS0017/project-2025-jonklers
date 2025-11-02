@@ -23,8 +23,8 @@ public:
     User& get_current_user() { return db.get_curr();}
     // buy bid neg
     bool conclude_sale(std::shared_ptr<Listing> l, std::string method); //method = "Wallet" or "BankAccount"
-    bool place_bid(std::shared_ptr<Auction> l, double amount);
-    bool negotiate(std::shared_ptr<Negotiation> l, double amount);
+    bool place_bid(std::shared_ptr<Auction> l, std::string method, double amount);
+    bool negotiate(std::shared_ptr<Negotiation> l, std::string method, double amount);
     //TODO:
     bool delete_listing(std::string id);
     std::vector<std::shared_ptr<Listing>> get_all_listings();

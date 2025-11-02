@@ -88,7 +88,7 @@ std::vector<std::shared_ptr<Listing>> LogicHandler::get_user_listings() {
 }
 
 bool LogicHandler::conclude_sale(std::shared_ptr<Listing> l, std::string method) {
-    auto buyer = db.get_curr();
+    auto& buyer = db.get_curr();
     auto seller = *db.load_user(l->get_owner_id());
     if(method == "Wallet"){
        buyer.update_wallet(true, l->get_price());
@@ -99,11 +99,13 @@ bool LogicHandler::conclude_sale(std::shared_ptr<Listing> l, std::string method)
     }else{
         return false;
     }
+    db.update_usr(buyer);
+    db.update_usr(seller);
     db.archive_listing(l->get_listing_id());
     return true;
 }
 
-bool LogicHandler::place_bid(std::shared_ptr<Auction> l, double amount) {
+bool LogicHandler::place_bid(std::shared_ptr<Auction> l, std::string method, double amount) {
     try{
         l->set_price(amount);
         l->set_last_bidder(db.get_curr().get_id());
@@ -111,7 +113,7 @@ bool LogicHandler::place_bid(std::shared_ptr<Auction> l, double amount) {
     return true;
 }
 
-bool LogicHandler::negotiate(std::shared_ptr<Negotiation> l, double amount) {
+bool LogicHandler::negotiate(std::shared_ptr<Negotiation> l, std::string mehtod, double amount) {
     try{
         Offer o;
         o.sender_id = db.get_curr().get_id();
