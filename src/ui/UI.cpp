@@ -333,13 +333,15 @@ void UI::addListing(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> destin
 
         if (listing->type() == "Negotiation") {
             auto listneg = std::dynamic_pointer_cast<Negotiation>(listing);
+            auto offersItem = std::make_shared<MenuItem>("Offers [" + std::to_string(listneg->get_offers().size()) + "]", [] {});
+            parent->items.push_back(offersItem);
 
             for (auto offer : listneg->get_offers()) {
                 auto offerItem = std::make_shared<MenuItem>("Offer ["+std::to_string(offer.neg_amount)+"GC]", [] {});
                 offerItem->header = "Item: " + listing->get_product().name + "\nOffer for " + std::to_string(offer.neg_amount) + "GC, made by: " + offer.sender_id + "\n";
                 offerItem->items.push_back(std::make_shared<MenuItem>("Accept", [this, listneg, &offer, menu] {respondLeaf(true, listneg, offer, menu);}));
                 offerItem->items.push_back(std::make_shared<MenuItem>("Reject", [this, listneg, &offer, menu] {respondLeaf(false, listneg, offer, menu);}));
-                parent->items.push_back(offerItem);
+                offersItem->items.push_back(offerItem);
             }
         }
     }
