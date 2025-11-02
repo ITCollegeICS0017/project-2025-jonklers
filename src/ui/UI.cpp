@@ -49,8 +49,7 @@ void UI::registerLeaf() {
     }
 }
 void UI::buyLeaf(std::shared_ptr<Listing> listing, std::shared_ptr<Menu> menu) {
-    bool res = true; // TODO: wait for backend fix
-    // bool res = logic.conclude_sale(listing);
+    bool res = logic.conclude_sale(listing);
 
     if (res) {
         std::cout << "Successfully concluded sale.\n";
@@ -67,8 +66,7 @@ void UI::bidLeaf(std::shared_ptr<Listing> listing, std::shared_ptr<Menu> menu) {
     std::cin >> price;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-    bool res = true; // TODO: wait for backend fix
-    // bool res = logic.place_bid(std::dynamic_pointer_cast<Auction>(listing), price);
+    bool res = logic.place_bid(std::dynamic_pointer_cast<Auction>(listing), price);
 
     if (res) {
         std::cout << "Successfully bid on listing.\n";
@@ -85,8 +83,7 @@ void UI::negotiateLeaf(std::shared_ptr<Listing> listing, std::shared_ptr<Menu> m
     std::cin >> price;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-    bool res = true; // TODO: wait for backend fix
-    // bool res = logic.negotiate(std::dynamic_pointer_cast<Negotiation>(listing), price);
+    bool res = logic.negotiate(std::dynamic_pointer_cast<Negotiation>(listing), price);
 
     if (res) {
         std::cout << "Successfully made offer on listing.\n";
