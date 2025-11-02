@@ -118,17 +118,19 @@ bool LogicHandler::place_bid(std::shared_ptr<Auction> l, double amount) {
     auto a = std::dynamic_pointer_cast<Listing>(l);
 
     //Unreserve previous bidder's money
-    bool exits = false;
-    if(!(l->get_last_bidder() == "")) {
+    auto prev_bidder = l->get_last_bidder();
+    if(!(prev_bidder == "")) {
     auto last_u = *db.load_user(l->get_last_bidder());
         last_u.move_reserved(false, l->get_price());
         db.update_usr(last_u);
-        exits = true;
     }
 
-    if(exits) auto last_u = *db.load_user(l->get_last_bidder());
     l->set_price(amount);
     l->set_last_bidder(u.get_id());
+    if(!(prev_bidder == "")){
+        auto last_u = *db.load_user(prev_bidder);
+        create_message(a, last_u, MessageEvent::bid);
+    }
     auto temp_u = *db.load_user(l->get_owner_id());
     create_message(a, temp_u, MessageEvent::bid);
     db.update_usr(u);
