@@ -42,7 +42,7 @@ public:
     bool recharge_balance(std::string mehtod, double ammount);
 
     std::vector<std::shared_ptr<Listing>> get_filtered(std::vector<std::shared_ptr<Listing>> to_filter, Category category);
-    std::vector<std::shared_ptr<Listing>>& get_sorted(std::vector<std::shared_ptr<Listing>> to_sort, bool descending);
+    std::vector<std::shared_ptr<Listing>> get_sorted(std::vector<std::shared_ptr<Listing>> to_sort, bool descending);
 private:
     DatabaseHandler db;
 };

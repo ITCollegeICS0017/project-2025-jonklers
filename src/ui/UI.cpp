@@ -293,7 +293,7 @@ void UI::addListings(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> desti
     auto filterItem = std::make_shared<MenuItem>("Filter by Category", [] {});
     for (auto category : {Category::ELECTRONICS, Category::BOOKS, Category::FASHION, Category::GARDEN, Category::HOME}) {
         auto categoryItem = std::make_shared<MenuItem>(enumToStrCategory(category), [this, menu, destination, parent, listings, category, filterItem] {
-            menu->gotoItem(filterItem);addListings(menu, destination, parent, logic.get_filtered(listings, category));
+            addListings(menu, destination, parent, logic.get_filtered(listings, category));menu->backMenu();
         });
         filterItem->items.push_back(categoryItem);
     }
