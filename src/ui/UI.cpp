@@ -49,7 +49,8 @@ void UI::registerLeaf() {
     }
 }
 void UI::buyLeaf(std::shared_ptr<Listing> listing, std::shared_ptr<Menu> menu) {
-    bool res = logic.conclude_sale(listing);
+    bool res = true; // TODO: wait for backend fix
+    // bool res = logic.conclude_sale(listing);
 
     if (res) {
         std::cout << "Successfully concluded sale.\n";
@@ -66,7 +67,8 @@ void UI::bidLeaf(std::shared_ptr<Listing> listing, std::shared_ptr<Menu> menu) {
     std::cin >> price;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-    bool res = logic.place_bid(std::dynamic_pointer_cast<Auction>(listing), price);
+    bool res = true; // TODO: wait for backend fix
+    // bool res = logic.place_bid(std::dynamic_pointer_cast<Auction>(listing), price);
 
     if (res) {
         std::cout << "Successfully bid on listing.\n";
@@ -83,7 +85,8 @@ void UI::negotiateLeaf(std::shared_ptr<Listing> listing, std::shared_ptr<Menu> m
     std::cin >> price;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-    bool res = logic.negotiate(std::dynamic_pointer_cast<Negotiation>(listing), price);
+    bool res = true; // TODO: wait for backend fix
+    // bool res = logic.negotiate(std::dynamic_pointer_cast<Negotiation>(listing), price);
 
     if (res) {
         std::cout << "Successfully made offer on listing.\n";
@@ -102,18 +105,26 @@ void UI::mainMenu() {
     auto messagesItem = std::make_shared<MenuItem>("Messages", [] {});
     auto profileItem = std::make_shared<MenuItem>("Profile", [] {});
 
-    auto walletItem = std::make_shared<MenuItem>("My Wallet", [this] {walletLeaf();});
-    auto bankItem = std::make_shared<MenuItem>("My Bank", [this] {bankLeaf();});
+    auto myBalance = std::make_shared<MenuItem>("My Balance", [] {});
     auto myListingsItem = std::make_shared<MenuItem>("My Listings", [] {});
     auto myHistory = std::make_shared<MenuItem>("My History", [] {});
 
-    profileItem->items = {walletItem, bankItem, myListingsItem, myHistory};
+    auto walletItem = std::make_shared<MenuItem>("My Wallet", [this] {walletLeaf();});
+    auto bankItem = std::make_shared<MenuItem>("My Bank", [this] {bankLeaf();});
+    auto gcItem = std::make_shared<MenuItem>("GorillaCoin Balance", [this] {});
+
+    myBalance->items = {gcItem, walletItem, bankItem};
+
+    profileItem->items = {myBalance, myListingsItem, myHistory};
 
     auto menu = std::make_shared<Menu>(std::make_shared<MenuItem>("mainMenu", std::vector<std::shared_ptr<MenuItem>> {
         listingsItem,
         messagesItem,
         profileItem,
     }, [] {}));
+
+    gcItem->action = [this, gcItem, menu] {addGC(gcItem, menu);};
+    gcItem->action();
 
     myListingsItem->action = [this, menu, myListingsItem] {addListings(menu, myListingsItem, myListingsItem, logic.get_user_listings());};
     myListingsItem->action();
@@ -128,6 +139,75 @@ void UI::mainMenu() {
     messagesItem->action();
 
     menu->run();
+}
+
+void UI::convertLeaf(std::string method, std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> gcItem) {
+    double amount;
+    std::cout << "Enter amount: ";
+    std::cin >> amount;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    auto w = logic.get_current_user().get_wallet();
+    auto b = logic.get_current_user().get_bank_account();
+
+    if (
+        (method == "Wallet" && amount > w.balance) ||
+        (method == "Bank" && amount > b.balance)) {
+        std::cout << "Not enough on respective balance." << std::endl;
+        wait();
+        return;
+    }
+
+    double amount_to;
+    if (method == "Wallet") {
+        amount_to = logic.to_gorilla_coin(w.curr, amount);
+    }
+    else if (method == "Bank") {
+        amount_to = logic.to_gorilla_coin(b.curr, amount);
+    }
+
+    std::string confirm;
+    std::cout << "Confirm conversion to " + std::to_string(amount_to) + "GC [y]/n: ";
+    std::getline(std::cin, confirm);
+
+    if (confirm == "n") {
+        std::cout << "Canceled conversion." << std::endl;
+        wait();
+        return;
+    }
+
+    if (method == "Wallet") {
+        if (!logic.recharge_balance("Wallet", amount)) {
+            std::cout << "Failed" << std::endl;
+            wait();
+            return;
+        }
+    }
+    else if (method == "Bank") {
+        if (!logic.recharge_balance("BankAccount", amount)) {
+            std::cout << "Failed" << std::endl;
+            wait();
+            return;
+        }
+    }
+
+    std::cout << "Successfully converted." << std::endl;
+    wait();
+    gcItem->action();
+}
+
+
+void UI::addGC(std::shared_ptr<MenuItem> parent, std::shared_ptr<Menu> menu) {
+    parent->header = "Current GorillaCoin balance: " + std::to_string(logic.get_current_user().get_balance()) + "\n";
+    parent->items.clear();
+
+    auto wCur = logic.get_current_user().get_wallet().curr;
+    auto bCur = logic.get_current_user().get_bank_account().curr;
+    auto rechargeWalletItem = std::make_shared<MenuItem>("Recharge with Wallet  [1" + CurrencyToString(wCur) + "=" + std::to_string(logic.to_gorilla_coin(wCur, 1)) + "GC]", [this, menu, parent] {convertLeaf("Wallet", menu, parent);});
+    auto rechargeBankItem = std::make_shared<MenuItem>("Recharge with Bank    [1" + CurrencyToString(bCur) + "=" + std::to_string(logic.to_gorilla_coin(bCur, 1)) + "GC]", [this, menu, parent] {convertLeaf("Bank", menu, parent);});
+
+    parent->items.push_back(rechargeWalletItem);
+    parent->items.push_back(rechargeBankItem);
 }
 
 void UI::walletLeaf() {

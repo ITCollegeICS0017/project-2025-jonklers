@@ -19,11 +19,13 @@ class UI {
     void mainMenu();
     void walletLeaf();
     void bankLeaf();
+    void convertLeaf(std::string method, std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> gcItem);
     void createListingLeaf(std::string type, Category category);
     void buyLeaf(std::shared_ptr<Listing> listing, std::shared_ptr<Menu> menu);
     void bidLeaf(std::shared_ptr<Listing> listing, std::shared_ptr<Menu> menu);
     void negotiateLeaf(std::shared_ptr<Listing> listing, std::shared_ptr<Menu> menu);
 
+    void addGC(std::shared_ptr<MenuItem> parent, std::shared_ptr<Menu> menu);
     void addListings(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> destination, std::shared_ptr<MenuItem> parent, std::vector<std::shared_ptr<Listing>> listings, bool can_create = true);
     void addMessages(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> destination, std::shared_ptr<MenuItem> parent, std::vector<Message> messages);
     void addListing(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> destination, std::shared_ptr<MenuItem> parent, std::shared_ptr<Listing> listing, bool can_act = true);
