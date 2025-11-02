@@ -207,7 +207,7 @@ void UI::addListings(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> desti
 
     for (auto listing : listings) {
         auto listingItem = std::make_shared<MenuItem>(listing->get_product().name, [] {});
-        addListing(menu, destination, listingItem, listing);
+        addListing(menu, destination, listingItem, listing, can_create);
         parent->items.push_back(listingItem);
     }
 }
@@ -221,7 +221,7 @@ void UI::addMessages(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> desti
         parent->items.push_back(messageItem);
     }
 }
-void UI::addListing(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> destination, std::shared_ptr<MenuItem> parent, std::shared_ptr<Listing> listing) {
+void UI::addListing(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> destination, std::shared_ptr<MenuItem> parent, std::shared_ptr<Listing> listing, bool can_act) {
     parent->items.clear();
 
     parent->header = "Name: " + listing->get_product().name + "\n";
@@ -229,6 +229,12 @@ void UI::addListing(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> destin
     parent->header += "Category: " + enumToStrCategory(listing->get_product().category) + "\n";
     parent->header += "Price: " + std::to_string(listing->get_price()) + "\n";
     parent->header += "Expires: " + std::to_string(listing->get_expiry()) + "\n";
+
+    // Skip all subitems
+    if (!can_act) {
+        parent->items.push_back(std::make_shared<MenuItem>("This listing is expired", [] {}));
+        return;
+    }
 
     if (listing->get_owner_id() != logic.get_current_user().get_id()) {
         auto buyItem = std::make_shared<MenuItem>("Buy", [] {});
