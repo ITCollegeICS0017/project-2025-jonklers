@@ -200,6 +200,7 @@ void LogicHandler::expire_listing(std::shared_ptr<Listing>& l) {
             double price = a->get_price();
             bidder.move_reserved(false, price);
             bidder.update_balance(true, price);
+            bidder.update_balance(true, price);
             seller.update_balance(false, price);
             db.update_usr(bidder);
             db.update_usr(seller);
