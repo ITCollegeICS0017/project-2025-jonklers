@@ -88,7 +88,7 @@ std::vector<std::shared_ptr<Listing>> LogicHandler::get_user_listings() {
 }
 
 
-bool LogicHandler::conclude_sale(std::shared_ptr<Listing> l, std::string method) {
+bool LogicHandler::conclude_sale(std::shared_ptr<Listing> l) {
     auto& buyer = db.get_curr();
     auto seller = *db.load_user(l->get_owner_id());
     if(buyer.get_balance() < l->get_price()) return false;
@@ -119,6 +119,9 @@ bool LogicHandler::place_bid(std::shared_ptr<Auction> l, double amount) {
 bool LogicHandler::negotiate(std::shared_ptr<Negotiation> l, double amount) {
     auto& u = get_current_user();
     if(amount < 0 || u.get_balance() < amount) return false;
+    for(auto& o : l->get_offers()) {
+        if(o.sender_id == u.get_id()) return false;
+    }
     Offer o;
     o.sender_id = u.get_id();
     o.neg_amount = amount;
@@ -149,4 +152,23 @@ bool LogicHandler::recharge_balance(std::string method, double amount) {
         u.update_balance(false, to_gorilla_coin(u.get_bank_account().curr, amount));
         return true;
     }else return false;
+}
+bool LogicHandler::respond_offer(bool accept, std::shared_ptr<Negotiation> l, Offer& o) {
+    try{
+        auto sender = *db.load_user(o.sender_id);
+        sender.move_reserved(false, o.neg_amount);
+        if(accept) {
+            sender.update_balance(true, o.neg_amount);
+            db.update_usr(sender);
+            db.update_usr(db.get_curr());
+            l->set_price(o.neg_amount);
+            db.archive_listing(l->get_listing_id());
+            return true;
+        }else {
+            db.update_usr(sender);
+            l->delete_offer(o.sender_id);
+            db.update_listings_file();
+            return true;
+        }
+    }catch(...) {return false;}
 }
