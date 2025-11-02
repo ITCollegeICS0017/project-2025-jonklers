@@ -330,5 +330,29 @@ void UI::addListing(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> destin
     else {
         auto deleteItem = std::make_shared<MenuItem>("Delete", [this, listing, menu, destination] {logic.delete_listing(listing->get_listing_id());menu->gotoItem(destination);});
         parent->items.push_back(deleteItem);
+
+        if (listing->type() == "Negotiation") {
+            auto listneg = std::dynamic_pointer_cast<Negotiation>(listing);
+
+            for (auto offer : listneg->get_offers()) {
+                auto offerItem = std::make_shared<MenuItem>("Offer ["+std::to_string(offer.neg_amount)+"GC]", [] {});
+                offerItem->header = "Item: " + listing->get_product().name + "\nOffer for " + std::to_string(offer.neg_amount) + "GC, made by: " + offer.sender_id + "\n";
+                offerItem->items.push_back(std::make_shared<MenuItem>("Accept", [this, listneg, &offer, menu] {respondLeaf(true, listneg, offer, menu);}));
+                offerItem->items.push_back(std::make_shared<MenuItem>("Reject", [this, listneg, &offer, menu] {respondLeaf(false, listneg, offer, menu);}));
+                parent->items.push_back(offerItem);
+            }
+        }
     }
+}
+
+void UI::respondLeaf(bool accept, std::shared_ptr<Negotiation> listneg, Offer &offer, std::shared_ptr<Menu> menu) {
+    auto res = logic.respond_offer(accept, listneg, offer);
+
+    if (res) {
+        std::cout << "Response succeeded." << std::endl;
+        menu->keys = {0};
+    } else
+        std::cout << "Response failed." << std::endl;
+
+    wait();
 }
