@@ -100,23 +100,30 @@ bool LogicHandler::conclude_sale(std::shared_ptr<Listing> l, std::string method)
     return true;
 }
 
-//TODO::
-bool LogicHandler::place_bid(std::shared_ptr<Auction> l, std::string method, double amount) {
+//TODO:: Make messages
+bool LogicHandler::place_bid(std::shared_ptr<Auction> l, double amount) {
     auto& u = get_current_user();
-    if(u.get_balance() < l->get_price()) return false;
+    if(amount < l->get_price() || u.get_balance() < amount) return false;
     u.move_reserved(true, amount);
+
+    //Unreserve previous bidder's money
+    auto last_u = *db.load_user(l->get_last_bidder());
+    last_u.move_reserved(false, l->get_price());
+    db.update_usr(last_u);
+
     l->set_price(amount);
-    l->set_last_bidder(db.get_curr().get_id());
+    l->set_last_bidder(u.get_id());
     return true;
 }
 
-bool LogicHandler::negotiate(std::shared_ptr<Negotiation> l, std::string mehtod, double amount) {
-    try{
-        Offer o;
-        o.sender_id = db.get_curr().get_id();
-        o.neg_amount = amount;
-        l->add_offer(o);
-    }catch(...){return false;}
+bool LogicHandler::negotiate(std::shared_ptr<Negotiation> l, double amount) {
+    auto& u = get_current_user();
+    if(amount < 0 || u.get_balance() < amount) return false;
+    Offer o;
+    o.sender_id = u.get_id();
+    o.neg_amount = amount;
+    u.move_reserved(true, amount);
+    l->add_offer(o);
     return true;
 }
 
