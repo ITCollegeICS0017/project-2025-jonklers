@@ -60,7 +60,7 @@ std::vector<std::shared_ptr<Listing>> LogicHandler::get_all_listings() {
 }
 
 std::vector<std::shared_ptr<Listing>> LogicHandler::get_archived_listings() {
-    std::vector<std::shared_ptr<Listing>> listings = db.get_archived();
+    std::vector<std::shared_ptr<Listing>> listings = db.get_own_archived();
     return listings;
 }
 

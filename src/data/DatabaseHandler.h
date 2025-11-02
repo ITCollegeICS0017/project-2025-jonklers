@@ -17,7 +17,6 @@ class DatabaseHandler {
 public:
     DatabaseHandler();
     ~DatabaseHandler() = default;
-    DatabaseHandler(std::string user_fp, std::string listing_fp); // file paths
     void set_user_file(std::string new_path);
     void set_listing_file(std::string new_path);
     void set_archived_file(std::string new_path);
@@ -42,7 +41,8 @@ public:
     void update_listings_file();
     void archive_listing(std::string l_id);
     void append_archive(std::shared_ptr<Listing> l);
-    std::vector<std::shared_ptr<Listing>> get_archived();
+    std::vector<std::shared_ptr<Listing>> get_all_archived();
+    std::vector<std::shared_ptr<Listing>> get_own_archived();
 
 private:
     std::unordered_map<std::string, std::shared_ptr<Listing>> all_listings;
@@ -54,7 +54,8 @@ private:
 
     void loop();
 
-    std::string usr_filepath = "storage/users.json";
-    std::string lst_filepath = "storage/active_listings.json";
-    std::string archive_filepath = "storage/archived_listings.json";
+    std::string dir = "storage";
+    std::string usr_filepath = dir + "/users.json";
+    std::string lst_filepath =  dir + "/listings.json";
+    std::string archive_filepath = dir + "/archive.json";
 };
