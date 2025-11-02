@@ -177,7 +177,14 @@ void DatabaseHandler::append_archive(std::shared_ptr<Listing> l) {
     if(!ifile.is_open()) throw std::runtime_error("Cannot open archive file!");
     ifile >> j;
     ifile.close();
-    j[l->get_listing_id()] = *l;
+    auto id = l->get_listing_id();
+    if (l->type() == "Auction") {
+        j[id] = *std::dynamic_pointer_cast<Auction>(l);
+    } else if (l->type() == "Negotiation") {
+        j[id] = *std::dynamic_pointer_cast<Negotiation>(l);
+    } else {
+        j[id] = *l;
+    }
     std::ofstream outfile(archive_filepath);
     if(!outfile.is_open()) throw std::runtime_error("Cannot open archive file!");
     outfile << j.dump(4);

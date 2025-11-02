@@ -56,6 +56,7 @@ std::vector<std::shared_ptr<Listing>> LogicHandler::get_all_listings() {
     for(const auto& [key, value] : db.get_map()) {
         listings.push_back(value);
     }
+    check_expiry(listings);
     return listings;
 }
 
@@ -84,6 +85,7 @@ std::vector<std::shared_ptr<Listing>> LogicHandler::get_user_listings() {
     for(const auto& [key, value] : db.get_map()) {
         if(value->get_owner_id() == db.get_curr().get_id()) listings.push_back(value);
     }
+    check_expiry(listings);
     return listings;
 }
 
@@ -107,9 +109,11 @@ bool LogicHandler::place_bid(std::shared_ptr<Auction> l, double amount) {
     u.move_reserved(true, amount);
 
     //Unreserve previous bidder's money
-    auto last_u = *db.load_user(l->get_last_bidder());
-    last_u.move_reserved(false, l->get_price());
-    db.update_usr(last_u);
+    if(!(l->get_last_bidder() == "")) {
+        auto last_u = *db.load_user(l->get_last_bidder());
+        last_u.move_reserved(false, l->get_price());
+        db.update_usr(last_u);
+    }
 
     l->set_price(amount);
     l->set_last_bidder(u.get_id());
@@ -177,31 +181,37 @@ bool LogicHandler::respond_offer(bool accept, std::shared_ptr<Negotiation> l, Of
     }catch(...) {return false;}
 }
 
-void LogicHandler::check_expiry() {
-    auto listings = get_all_listings();
+void LogicHandler::check_expiry(std::vector<std::shared_ptr<Listing>>& listings) {
     for(auto l : listings) {
         if(l->get_expiry() < std::time(nullptr)) {
             //LISTING HAS EXPIRED
+            expire_listing(l);
         }
     }
 }
 
-void LogicHandler::expire_listing(std::shared_ptr<Listing> l) {
+void LogicHandler::expire_listing(std::shared_ptr<Listing>& l) {
     if(l->type() == "Auction") {
         auto a = std::dynamic_pointer_cast<Auction>(l);
-        auto bidder = *db.load_user(a->get_last_bidder());
-        auto seller = *db.load_user(a->get_owner_id());
+        if(!(a->get_last_bidder() == "")) {
+            auto bidder = *db.load_user(a->get_last_bidder());
+            auto seller = *db.load_user(a->get_owner_id());
 
-        double price = a->get_price();
-        bidder.move_reserved(false, price);
-        bidder.update_balance(true, price);
-        seller.update_balance(false, price);
-
-        db.update_usr(bidder);
-        db.update_usr(seller);
-
-        db.archive_listing(a->get_listing_id());
+            double price = a->get_price();
+            bidder.move_reserved(false, price);
+            bidder.update_balance(true, price);
+            seller.update_balance(false, price);
+            db.update_usr(bidder);
+            db.update_usr(seller);
+        }
     }else if(l->type() == "Negotiation") {
-
+        auto n = std::dynamic_pointer_cast<Negotiation>(l);
+        for(auto& o : n->get_offers()) {
+            auto u = *db.load_user(o.sender_id);
+            u.move_reserved(false, o.neg_amount);
+            db.update_usr(u);
+        }
     }
+    db.archive_listing(l->get_listing_id());
+    db.update_listings_file();
 }
