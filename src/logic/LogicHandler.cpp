@@ -2,10 +2,8 @@
 #include "../base/User.h"
 #include "../base/Auction.h"
 #include "../base/Negotiation.h"
-#include "../ui/utils.h"
 #include <memory>
 #include <vector>
-#include <iostream>
 
 std::vector<std::shared_ptr<Listing>> LogicHandler::get_filtered(std::vector<std::shared_ptr<Listing>> to_filter,Category category){
     std::vector<std::shared_ptr<Listing>> filtered_v;
@@ -90,7 +88,6 @@ std::vector<std::shared_ptr<Listing>> LogicHandler::get_user_listings() {
 }
 
 bool LogicHandler::conclude_sale(std::shared_ptr<Listing> l, std::string method) {
-    std::cout << "Hia";
     auto& buyer = db.get_curr();
     auto seller = *db.load_user(l->get_owner_id());
     if(method == "Wallet"){
@@ -102,7 +99,6 @@ bool LogicHandler::conclude_sale(std::shared_ptr<Listing> l, std::string method)
     }else{
         return false;
     }
-    std::cout << "Hi";
     db.update_usr(buyer);
     db.update_usr(seller);
     db.archive_listing(l->get_listing_id());
