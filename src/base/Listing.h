@@ -44,7 +44,7 @@ protected:
 };
 
 std::string gen_uuid();
-inline std::time_t assign_expiry() {return std::time(nullptr) + 10 * 60;}
+inline std::time_t assign_expiry() {return std::time(nullptr) + 3 * 10;}
 
 void to_json(nlohmann::json& j, const Listing& obj);
 void from_json(const nlohmann::json& j, Listing& obj);

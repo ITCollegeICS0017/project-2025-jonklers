@@ -34,8 +34,8 @@ public:
     std::vector<std::shared_ptr<Listing>> get_archived_listings();
     std::shared_ptr<Listing> get_single_listing(std::string id);
 
-    void check_expiry();
-    void expire_listing(std::shared_ptr<Listing> l);
+    void check_expiry(std::vector<std::shared_ptr<Listing>>& l);
+    void expire_listing(std::shared_ptr<Listing>& l);
 
     inline double to_gorilla_coin(Currency c, double ammount) { return ammount * CONVERSION_RATE.at(CurrencyToString(c)); }
 

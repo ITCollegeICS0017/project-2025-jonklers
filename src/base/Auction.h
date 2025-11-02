@@ -13,7 +13,7 @@ public:
     void set_last_bidder(std::string id) { this->last_bidder_id = id;}
 
 private:
-    std::string last_bidder_id;
+    std::string last_bidder_id = "";
 };
 
 void to_json(nlohmann::json& j, const Auction& obj);
