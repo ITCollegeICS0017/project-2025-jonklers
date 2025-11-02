@@ -37,3 +37,4 @@ test: $(BIN) tests/test_basic.sh
 
 clean:
 	rm -rf build
+	rm storage/*
