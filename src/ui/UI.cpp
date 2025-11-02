@@ -118,7 +118,7 @@ void UI::mainMenu() {
     myListingsItem->action = [this, menu, myListingsItem] {addListings(menu, myListingsItem, myListingsItem, logic.get_user_listings());};
     myListingsItem->action();
 
-    myHistory->action = [this, menu, myHistory] {addListings(menu, myHistory, myHistory, logic.get_archived_listings());};
+    myHistory->action = [this, menu, myHistory] {addListings(menu, myHistory, myHistory, logic.get_archived_listings(), false);};
     myHistory->action();
 
     listingsItem->action = [this, menu, listingsItem] {addListings(menu, listingsItem, listingsItem, logic.get_all_listings());};
@@ -182,10 +182,11 @@ void UI::addCreateListing(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> 
 }
 
 
-void UI::addListings(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> destination, std::shared_ptr<MenuItem> parent, std::vector<std::shared_ptr<Listing>> listings) {
+void UI::addListings(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> destination, std::shared_ptr<MenuItem> parent, std::vector<std::shared_ptr<Listing>> listings, bool can_create) {
     parent->items.clear();
 
-    addCreateListing(menu, destination, parent);
+    if (can_create)
+        addCreateListing(menu, destination, parent);
 
     auto sortAscItem = std::make_shared<MenuItem>("Sort by Price (Asc)", [this, menu, destination, parent, listings] {
         addListings(menu, destination, parent, logic.get_sorted(listings, false));
