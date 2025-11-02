@@ -1,7 +1,7 @@
 #pragma once
 #include "../data/nlohmann/json.hpp"
 #include <string>
-#include <chrono>
+#include <ctime>
 
 
 enum class Category { ELECTRONICS, FASHION, BOOKS, HOME, GARDEN };
@@ -16,6 +16,7 @@ struct Product {
 class Listing {
 public:
     Listing() = default;
+    virtual ~Listing() = default;
     Listing(double price, std::string owner_id, Product p);
 
     virtual std::string type() const { return "Listing";}

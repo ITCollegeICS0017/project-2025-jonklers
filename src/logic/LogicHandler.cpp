@@ -127,6 +127,7 @@ bool LogicHandler::negotiate(std::shared_ptr<Negotiation> l, double amount) {
     o.neg_amount = amount;
     u.move_reserved(true, amount);
     l->add_offer(o);
+    db.update_listings_file();
     return true;
 }
 
@@ -161,6 +162,7 @@ bool LogicHandler::respond_offer(bool accept, std::shared_ptr<Negotiation> l, Of
         sender.move_reserved(false, o.neg_amount);
         if(accept) {
             sender.update_balance(true, o.neg_amount);
+            db.get_curr().update_balance(false, o.neg_amount);
             db.update_usr(sender);
             db.update_usr(db.get_curr());
             l->set_price(o.neg_amount);
@@ -173,4 +175,33 @@ bool LogicHandler::respond_offer(bool accept, std::shared_ptr<Negotiation> l, Of
             return true;
         }
     }catch(...) {return false;}
+}
+
+void LogicHandler::check_expiry() {
+    auto listings = get_all_listings();
+    for(auto l : listings) {
+        if(l->get_expiry() < std::time(nullptr)) {
+            //LISTING HAS EXPIRED
+        }
+    }
+}
+
+void LogicHandler::expire_listing(std::shared_ptr<Listing> l) {
+    if(l->type() == "Auction") {
+        auto a = std::dynamic_pointer_cast<Auction>(l);
+        auto bidder = *db.load_user(a->get_last_bidder());
+        auto seller = *db.load_user(a->get_owner_id());
+
+        double price = a->get_price();
+        bidder.move_reserved(false, price);
+        bidder.update_balance(true, price);
+        seller.update_balance(false, price);
+
+        db.update_usr(bidder);
+        db.update_usr(seller);
+
+        db.archive_listing(a->get_listing_id());
+    }else if(l->type() == "Negotiation") {
+
+    }
 }

@@ -1,13 +1,10 @@
 #pragma once
 
-#include <mutex>
 #include <unordered_map>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
-#include <thread>
-#include <atomic>
 
 
 class User;
@@ -48,11 +45,6 @@ private:
     std::unordered_map<std::string, std::shared_ptr<Listing>> all_listings;
     std::unique_ptr<User> current_user;
 
-    std::mutex mut;
-    std::atomic<bool> check_expiry;
-    std::thread worker;
-
-    void loop();
 
     std::string dir = "storage";
     std::string usr_filepath = dir + "/users.json";

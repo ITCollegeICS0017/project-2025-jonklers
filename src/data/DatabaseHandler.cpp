@@ -6,20 +6,15 @@
 #include <filesystem>
 #include <fstream>
 #include <memory>
-#include <mutex>
-#include <thread>
 #include <stdexcept>
 #include <vector>
 
 
-DatabaseHandler::DatabaseHandler() : check_expiry(true), worker(&DatabaseHandler::loop, this){
+DatabaseHandler::DatabaseHandler() {
     create_files();
     load_all_listings();
 }
 
-void DatabaseHandler::loop() {
-
-}
 void DatabaseHandler::set_user_file(std::string new_path) {
     std::filesystem::path user_path(new_path);
     if(!std::filesystem::exists(user_path)) throw std::runtime_error("Database error: Invalid file path!");
