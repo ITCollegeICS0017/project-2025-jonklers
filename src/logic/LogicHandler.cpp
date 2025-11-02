@@ -5,7 +5,7 @@
 #include <memory>
 #include <vector>
 
-std::vector<std::shared_ptr<Listing>> LogicHandler::get_filtered(std::vector<std::shared_ptr<Listing>>& to_filter,Category category){
+std::vector<std::shared_ptr<Listing>> LogicHandler::get_filtered(std::vector<std::shared_ptr<Listing>> to_filter,Category category){
     std::vector<std::shared_ptr<Listing>> filtered_v;
     for(auto l : to_filter) {
         if(l->get_product().category == category) filtered_v.push_back(l);
@@ -13,7 +13,7 @@ std::vector<std::shared_ptr<Listing>> LogicHandler::get_filtered(std::vector<std
     return filtered_v;
 }
 
-std::vector<std::shared_ptr<Listing>>& LogicHandler::get_sorted(std::vector<std::shared_ptr<Listing>>& to_sort, bool cheapest_first){
+std::vector<std::shared_ptr<Listing>>& LogicHandler::get_sorted(std::vector<std::shared_ptr<Listing>>    to_sort, bool cheapest_first){
     std::sort(to_sort.begin(), to_sort.end(), [cheapest_first](const auto& a, const auto& b) { return (cheapest_first) ? (a->get_price() < b->get_price()) : (a->get_price() > b->get_price());});
     return to_sort;
 }

@@ -109,7 +109,7 @@ std::shared_ptr<MenuItem> Menu::getCurrentItem() {
 
 std::vector<int> Menu::findItemPath(std::shared_ptr<MenuItem> target) {
     std::vector<int> _keys = rootItem->findItem(target);
-    assert(!_keys.empty());
+    if (!_keys.empty()) _keys = {0};
     return _keys;
 }
 

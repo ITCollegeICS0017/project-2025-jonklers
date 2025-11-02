@@ -48,6 +48,51 @@ void UI::registerLeaf() {
         wait();
     }
 }
+void UI::buyLeaf(std::string method, std::shared_ptr<Listing> listing, std::shared_ptr<Menu> menu) {
+    bool res = logic.conclude_sale(listing, method);
+
+    if (res) {
+        std::cout << "Successfully concluded sale.\n";
+    }
+    else
+        std::cout << "Error concluding sale.\n";
+    wait();
+    menu->keys = {0};
+}
+void UI::bidLeaf(std::string method, std::shared_ptr<Listing> listing, std::shared_ptr<Menu> menu) {
+    double price;
+    std::cout << "Bid price: ";
+    std::cin.precision(2);
+    std::cin >> price;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    bool res = logic.place_bid(std::dynamic_pointer_cast<Auction>(listing), price); // TODO: make sure logic implements payment method
+
+    if (res) {
+        std::cout << "Successfully bid on listing.\n";
+    }
+    else
+        std::cout << "Error bidding on listing.\n";
+    wait();
+    menu->keys = {0};
+}
+void UI::negotiateLeaf(std::string method, std::shared_ptr<Listing> listing, std::shared_ptr<Menu> menu) {
+    double price;
+    std::cout << "Offer price: ";
+    std::cin.precision(2);
+    std::cin >> price;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    bool res = logic.negotiate(std::dynamic_pointer_cast<Negotiation>(listing), price); // TODO: make sure logic implements payment method
+
+    if (res) {
+        std::cout << "Successfully made offer on listing.\n";
+    }
+    else
+        std::cout << "Error making offer for listing.\n";
+    wait();
+    menu->keys = {0};
+}
 
 
 
@@ -69,7 +114,7 @@ void UI::mainMenu() {
         profileItem,
     }, [] {}));
 
-    myListingsItem->action = [this, menu, myListingsItem] {addListings(menu, myListingsItem, myListingsItem, logic.get_all_listings());};
+    myListingsItem->action = [this, menu, myListingsItem] {addListings(menu, myListingsItem, myListingsItem, logic.get_user_listings());};
     myListingsItem->action();
 
     listingsItem->action = [this, menu, listingsItem] {addListings(menu, listingsItem, listingsItem, logic.get_all_listings());};
@@ -138,7 +183,22 @@ void UI::addListings(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> desti
 
     addCreateListing(menu, destination, parent);
 
-    // TODO: add filter and sort
+    auto sortAscItem = std::make_shared<MenuItem>("Sort by Price (Asc)", [this, menu, destination, parent, listings] {
+        addListings(menu, destination, parent, logic.get_sorted(listings, false));
+    });
+    auto sortDescItem = std::make_shared<MenuItem>("Sort by Price (Desc)", [this, menu, destination, parent, listings] {
+        addListings(menu, destination, parent, logic.get_sorted(listings, true));
+    });
+    auto filterItem = std::make_shared<MenuItem>("Filter by Category", [] {});
+    for (auto category : {Category::ELECTRONICS, Category::BOOKS, Category::FASHION, Category::GARDEN, Category::HOME}) {
+        auto categoryItem = std::make_shared<MenuItem>(enumToStrCategory(category), [this, menu, destination, parent, listings, category, filterItem] {
+            menu->gotoItem(filterItem);addListings(menu, destination, parent, logic.get_filtered(listings, category));
+        });
+        filterItem->items.push_back(categoryItem);
+    }
+    parent->items.push_back(sortAscItem);
+    parent->items.push_back(sortDescItem);
+    parent->items.push_back(filterItem);
 
     for (auto listing : listings) {
         auto listingItem = std::make_shared<MenuItem>(listing->get_product().name, [] {});
@@ -160,15 +220,36 @@ void UI::addListing(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> destin
     parent->items.clear();
 
     parent->header = "Name: " + listing->get_product().name + "\n";
-    parent->header = "Description: " + listing->get_product().description + "\n";
-    parent->header = "Category: " + enumToStrCategory(listing->get_product().category) + "\n";
-    parent->header = "Price: " + std::to_string(listing->get_price()) + "\n";
-    parent->header = "Expires: " + std::to_string(listing->get_expiry()) + "\n";
+    parent->header += "Description: " + listing->get_product().description + "\n";
+    parent->header += "Category: " + enumToStrCategory(listing->get_product().category) + "\n";
+    parent->header += "Price: " + std::to_string(listing->get_price()) + "\n";
+    parent->header += "Expires: " + std::to_string(listing->get_expiry()) + "\n";
 
     if (listing->get_owner_id() != logic.get_current_user().get_id()) {
-        // TODO: other buying options
         auto buyItem = std::make_shared<MenuItem>("Buy", [] {});
-        parent->items.push_back(buyItem);
+        auto bidItem = std::make_shared<MenuItem>("Bid", [] {});
+        auto negotiateItem = std::make_shared<MenuItem>("Negotiate", [] {});
+        for (auto method : {"Wallet", "BankAccount"}) {
+            auto methodItem = std::make_shared<MenuItem>(method, [this, menu, method, listing] {buyLeaf(method, listing, menu);});
+            buyItem->items.push_back(methodItem);
+        }
+        for (auto method : {"Wallet", "BankAccount"}) {
+            auto methodItem = std::make_shared<MenuItem>(method, [this, menu, method, listing] {bidLeaf(method, listing, menu);});
+            bidItem->items.push_back(methodItem);
+        }
+        for (auto method : {"Wallet", "BankAccount"}) {
+            auto methodItem = std::make_shared<MenuItem>(method, [this, menu, method, listing] {negotiateLeaf(method, listing, menu);});
+            negotiateItem->items.push_back(methodItem);
+        }
+
+        if (listing->type() == "Listing") {
+            parent->items.push_back(buyItem);
+        } else if (listing->type() == "Auction") {
+            parent->items.push_back(bidItem);
+        } else if (listing->type() == "Negotiation") {
+            parent->items.push_back(buyItem);
+            parent->items.push_back(negotiateItem);
+        }
     }
     else {
         auto deleteItem = std::make_shared<MenuItem>("Delete", [this, listing, menu, destination] {logic.delete_listing(listing->get_listing_id());menu->gotoItem(destination);});
