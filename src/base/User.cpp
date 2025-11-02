@@ -52,6 +52,7 @@ void to_json(nlohmann::json& j, const User& u) {
     j = {
         {"password", u.get_password()},
         {"balance", u.get_balance()},
+        {"reserved", u.get_reserved()},
         {"wallet", u.get_wallet()},
         {"bank_account", u.get_bank_account()},
         {"messages", u.get_messages()}
@@ -61,12 +62,14 @@ void to_json(nlohmann::json& j, const User& u) {
 void from_json(const nlohmann::json& j, User& u) {
     std::string pw = j.at("password").get<std::string>();
     double bal = j.at("balance").get<double>();
+    double res = j.at("reserved").get<double>();
     Wallet w = j.at("wallet").get<Wallet>();
     BankAccount b = j.at("bank_account").get<BankAccount>();
     std::vector<Message> m = j.at("messages").get<std::vector<Message>>();
 
     u.set_password(pw);
     u.set_balance(bal);
+    u.set_reserved(res);
     u.set_wallet(w);
     u.set_bank_account(b);
     u.set_messages(m);
