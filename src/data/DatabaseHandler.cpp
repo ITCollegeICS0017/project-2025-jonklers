@@ -176,8 +176,7 @@ void DatabaseHandler::append_archive(std::shared_ptr<Listing> l) {
     if(!ifile.is_open()) throw std::runtime_error("Cannot open archive file!");
     ifile >> j;
     ifile.close();
-    std::vector<std::shared_ptr<Listing>> contents = get_all_archived();
-    contents.push_back(l);
+    j[l->get_listing_id()] = *l;
     std::ofstream outfile(archive_filepath);
     if(!outfile.is_open()) throw std::runtime_error("Cannot open archive file!");
     outfile << j.dump(4);
