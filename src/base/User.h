@@ -41,13 +41,13 @@ inline const std::unordered_map<std::string, double> CONVERSION_RATE = {
 
 struct Wallet{
     std::string provider = "GORILLA_MONKEY_INC";
-    float balance = 1000.0;
+    double balance = 1000.0;
     Currency curr = Currency::BTC;
 };
 
 struct BankAccount{
     std::string provider = "GORILLA_MONKEY_INC";
-    float balance = 1000.0;
+    double balance = 1000.0;
     Currency curr = Currency::EUR;
 };
 

@@ -218,11 +218,6 @@ std::vector<std::shared_ptr<Listing>> DatabaseHandler::get_own_archived() {
 
 void DatabaseHandler::create_files() {
     if(!(std::filesystem::exists(dir) && std::filesystem::is_directory(dir))) std::filesystem::create_directories(dir);
-    if(!std::filesystem::exists(usr_filepath)) {
-        std::ofstream file(usr_filepath);
-        file << "{}";
-        file.close();
-    }
     if(!std::filesystem::exists(lst_filepath) || !std::filesystem::exists(usr_filepath)) {
         std::ofstream file2(lst_filepath);
         file2 << "{}";
@@ -232,5 +227,10 @@ void DatabaseHandler::create_files() {
         std::ofstream file3(archive_filepath);
         file3 << "{}";
         file3.close();
+    }
+    if(!std::filesystem::exists(usr_filepath)) {
+        std::ofstream file(usr_filepath);
+        file << "{}";
+        file.close();
     }
 }
