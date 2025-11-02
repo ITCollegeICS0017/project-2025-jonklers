@@ -197,7 +197,7 @@ void DatabaseHandler::append_archive(std::shared_ptr<Listing> l) {
 }
 
 std::vector<std::shared_ptr<Listing>> DatabaseHandler::get_archived() {
-    nlohmann::json j;
+    nlohmann::json j = nlohmann::json::array();
     std::ifstream ifile(archive_filepath);
     if(!ifile.is_open()) throw std::runtime_error("Cannot open archive file!");
     ifile >> j;
@@ -228,6 +228,6 @@ void DatabaseHandler::create_files() {
     file2 << "{}";
     file2.close();
     std::ofstream file3(archive_filepath);
-    file3 << "{}";
+    file3 << "[]";
     file3.close();
 }
