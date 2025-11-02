@@ -184,26 +184,27 @@ void DatabaseHandler::archive_listing(std::string id) {
 }
 
 void DatabaseHandler::append_archive(std::shared_ptr<Listing> l) {
-    nlohmann::json j = nlohmann::json::array();
+    nlohmann::json j;
     std::ifstream ifile(archive_filepath);
     if(!ifile.is_open()) throw std::runtime_error("Cannot open archive file!");
     ifile >> j;
     ifile.close();
-    j.push_back(*l) ;
+    std::vector<std::shared_ptr<Listing>> contents = get_all_archived();
+    contents.push_back(l);
     std::ofstream outfile(archive_filepath);
     if(!outfile.is_open()) throw std::runtime_error("Cannot open archive file!");
     outfile << j.dump(4);
     outfile.close();
 }
 
-std::vector<std::shared_ptr<Listing>> DatabaseHandler::get_archived() {
-    nlohmann::json j = nlohmann::json::array();
+std::vector<std::shared_ptr<Listing>> DatabaseHandler::get_all_archived() {
+    nlohmann::json j;
     std::ifstream ifile(archive_filepath);
     if(!ifile.is_open()) throw std::runtime_error("Cannot open archive file!");
     ifile >> j;
     ifile.close();
     std::vector<std::shared_ptr<Listing>> v;
-    for(auto& listing : j) {
+    for(auto& [id, listing] : j.items()) {
         std::shared_ptr<Listing> l;
         if(listing.contains("last_bidder_id")) {
             l = std::make_shared<Listing>(listing.get<Auction>()); 
@@ -212,10 +213,21 @@ std::vector<std::shared_ptr<Listing>> DatabaseHandler::get_archived() {
         }else {
             l = std::make_shared<Listing>(listing.get<Listing>()); 
         }
-        l->set_listing_id(listing["id"]);
-        if(l->get_owner_id() == current_user->get_id())v.push_back(l);
+        l->set_listing_id(id);
+        v.push_back(l);
     }
     return v;
+}
+
+std::vector<std::shared_ptr<Listing>> DatabaseHandler::get_own_archived() {
+    std::vector<std::shared_ptr<Listing>> v = get_all_archived();
+    std::vector<std::shared_ptr<Listing>> own_v;
+    for(auto& l : v) {
+        if(l->get_owner_id() == get_curr().get_id()) {
+            own_v.push_back(l);
+        }
+    }
+    return own_v;
 }
 
 void DatabaseHandler::create_files() {
@@ -228,6 +240,6 @@ void DatabaseHandler::create_files() {
     file2 << "{}";
     file2.close();
     std::ofstream file3(archive_filepath);
-    file3 << "[]";
+    file3 << "{}";
     file3.close();
 }
