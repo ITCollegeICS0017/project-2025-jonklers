@@ -27,6 +27,19 @@ inline std::string CurrencyToString(Currency c) {
     } 
 }
 
+inline Currency StringToCurrency(std::string s) {
+    if(s == "USD") return Currency::USD;
+    if(s == "EUR") return Currency::EUR;
+    if(s == "CNY") return Currency::CNY;
+    if(s == "JPY") return Currency::JPY;
+    if(s == "BTC") return Currency::BTC;
+    if(s == "ETH") return Currency::ETH;
+    if(s == "DOGE") return Currency::DOGE;
+    if(s == "XMR") return Currency::XMR;
+    if(s == "GC") return Currency::GC;
+    return Currency::USD;
+}
+
 //input currency, output conversion rate to GORILLA COIN
 inline const std::unordered_map<std::string, double> CONVERSION_RATE = { 
     {"USD", 0.133},

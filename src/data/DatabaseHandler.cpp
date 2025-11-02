@@ -138,9 +138,9 @@ void DatabaseHandler::load_all_listings() {
     for(auto& [id, listing] : j.items()) {
         std::shared_ptr<Listing> l;
         if(listing.contains("last_bidder_id")) {
-            l = std::make_shared<Listing>(listing.get<Auction>()); 
+            l = std::make_shared<Auction>(listing.get<Auction>()); 
         }else if(listing.contains("offers")) {
-            l = std::make_shared<Listing>(listing.get<Negotiation>()); 
+            l = std::make_shared<Negotiation>(listing.get<Negotiation>()); 
         }else {
             l = std::make_shared<Listing>(listing.get<Listing>()); 
         }
@@ -193,9 +193,9 @@ std::vector<std::shared_ptr<Listing>> DatabaseHandler::get_all_archived() {
     for(auto& [id, listing] : j.items()) {
         std::shared_ptr<Listing> l;
         if(listing.contains("last_bidder_id")) {
-            l = std::make_shared<Listing>(listing.get<Auction>()); 
+            l = std::make_shared<Auction>(listing.get<Auction>()); 
         }else if(listing.contains("offers")) {
-            l = std::make_shared<Listing>(listing.get<Negotiation>()); 
+            l = std::make_shared<Negotiation>(listing.get<Negotiation>()); 
         }else {
             l = std::make_shared<Listing>(listing.get<Listing>()); 
         }

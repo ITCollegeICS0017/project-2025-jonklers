@@ -19,7 +19,8 @@ void to_json(nlohmann::json& j, const Wallet& w) {
 void from_json(const nlohmann::json& j, Wallet& w) {
     j.at("provider").get_to(w.provider);
     j.at("w_balance").get_to(w.balance);
-    j.at("currency").get_to(w.curr);
+    std::string c = j.at("currency").get<std::string>();
+    w.curr = StringToCurrency(c);
 }
 
 void to_json(nlohmann::json& j, const BankAccount& b) {
@@ -33,7 +34,8 @@ void to_json(nlohmann::json& j, const BankAccount& b) {
 void from_json(const nlohmann::json& j, BankAccount& b) {
     j.at("provider").get_to(b.provider);
     j.at("b_balance").get_to(b.balance);
-    j.at("currency").get_to(b.curr);
+    std::string c = j.at("currency").get<std::string>();
+    b.curr = StringToCurrency(c);
 }
 
 void to_json(nlohmann::json& j, const Message& m) {
