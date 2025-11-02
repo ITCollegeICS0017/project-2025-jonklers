@@ -105,6 +105,7 @@ void UI::mainMenu() {
     auto walletItem = std::make_shared<MenuItem>("My Wallet", [this] {walletLeaf();});
     auto bankItem = std::make_shared<MenuItem>("My Bank", [this] {bankLeaf();});
     auto myListingsItem = std::make_shared<MenuItem>("My Listings", [] {});
+    auto myHistory = std::make_shared<MenuItem>("My History", [] {});
 
     profileItem->items = {walletItem, bankItem, myListingsItem};
 
@@ -116,6 +117,9 @@ void UI::mainMenu() {
 
     myListingsItem->action = [this, menu, myListingsItem] {addListings(menu, myListingsItem, myListingsItem, logic.get_user_listings());};
     myListingsItem->action();
+
+    myHistory->action = [this, menu, myHistory] {addListings(menu, myHistory, myHistory, logic.get_archived_listings());};
+    myHistory->action();
 
     listingsItem->action = [this, menu, listingsItem] {addListings(menu, listingsItem, listingsItem, logic.get_all_listings());};
     listingsItem->action();
