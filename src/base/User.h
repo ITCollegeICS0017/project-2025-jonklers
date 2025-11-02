@@ -7,11 +7,24 @@
 #include <iomanip>
 #include <sstream>
 #include <stdexcept>
+#include <unordered_map>
 
 class Listing;
 
 enum class FiatCurrency { USD, EUR, CNY, JPY };
 enum class CryptoCurrency { BITCOIN, ETHERIUM, DODGECOIN, MONERO };
+
+//input currency, output conversion rate to GORILLA COIN
+inline const std::unordered_map<std::string, double> CONVERSION_RATE = { 
+    {"USD", 0.133},
+    {"EUR", 0.143},
+    {"CNY", 0.019},
+    {"JPY", 0.00089},
+    {"BTC", 8666.67},
+    {"ETH", 426.67},
+    {"DOGE", 0.017},
+    {"XMR", 20.0}
+};
 
 struct Wallet{
     std::string provider = "GORILLA_MONKEY_INC";
@@ -32,7 +45,7 @@ struct Message{
 
 class User {
 public:
-    User() = default;
+    User() : balance(0) {};
     User(std::string id, std::string password);
 
     void update_wallet(bool subract, double amount);
@@ -55,6 +68,7 @@ public:
 private:
     std::string id; 
     std::string password_hash;
+    double balance;
     Wallet wallet;
     BankAccount bank_account;
     std::vector<Message> messages;

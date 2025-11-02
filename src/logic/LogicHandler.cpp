@@ -87,15 +87,18 @@ std::vector<std::shared_ptr<Listing>> LogicHandler::get_user_listings() {
     return listings;
 }
 
+
 bool LogicHandler::conclude_sale(std::shared_ptr<Listing> l, std::string method) {
     auto& buyer = db.get_curr();
     auto seller = *db.load_user(l->get_owner_id());
     if(method == "Wallet"){
-       buyer.update_wallet(true, l->get_price());
-       seller.update_wallet(false, l->get_price());
+        if(buyer.get_wallet().balance < l->get_price()) return false;
+        buyer.update_wallet(true, l->get_price());
+        seller.update_wallet(false, l->get_price());
     }else if(method == "BankAccount"){
-       buyer.update_bank_account(true, l->get_price());
-       seller.update_bank_account(false, l->get_price());
+        if(buyer.get_bank_account().balance < l->get_price()) return false;
+        buyer.update_bank_account(true, l->get_price());
+        seller.update_bank_account(false, l->get_price());
     }else{
         return false;
     }
@@ -106,10 +109,16 @@ bool LogicHandler::conclude_sale(std::shared_ptr<Listing> l, std::string method)
 }
 
 bool LogicHandler::place_bid(std::shared_ptr<Auction> l, std::string method, double amount) {
-    try{
-        l->set_price(amount);
-        l->set_last_bidder(db.get_curr().get_id());
-    }catch(...) {return false;}
+    if(method == "Wallet"){
+        if(db.get_curr().get_wallet().balance < l->get_price()) return false;
+    }else if(method == "BankAccount"){
+        if(db.get_curr().get_bank_account().balance < l->get_price()) return false;
+    }else{
+        return false;
+    }
+
+    l->set_price(amount);
+    l->set_last_bidder(db.get_curr().get_id());
     return true;
 }
 

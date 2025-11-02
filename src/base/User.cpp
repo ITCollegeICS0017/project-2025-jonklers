@@ -3,6 +3,7 @@
 #include <openssl/evp.h>
 
 
+
 User::User(std::string id, std::string pass) {
     this->id = id;
     this->password_hash = hash_password(pass);
