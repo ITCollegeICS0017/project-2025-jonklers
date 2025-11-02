@@ -11,8 +11,20 @@
 
 class Listing;
 
-enum class FiatCurrency { USD, EUR, CNY, JPY };
-enum class CryptoCurrency { BITCOIN, ETHERIUM, DODGECOIN, MONERO };
+enum class Currency { USD, EUR, CNY, JPY, BTC, ETH, DOGE, XMR };
+inline const std::string CurrencyToString(Currency c) {
+    switch(c){
+        case Currency::USD: return "USD";
+        case Currency::EUR: return "EUR";
+        case Currency::CNY: return "CNY";
+        case Currency::JPY: return "JPY";
+        case Currency::BTC: return "BTC";
+        case Currency::ETH: return "ETH";
+        case Currency::DOGE: return "DOGE";
+        case Currency::XMR: return "XMR";
+        default: return "";
+    } 
+}
 
 //input currency, output conversion rate to GORILLA COIN
 inline const std::unordered_map<std::string, double> CONVERSION_RATE = { 
@@ -29,13 +41,13 @@ inline const std::unordered_map<std::string, double> CONVERSION_RATE = {
 struct Wallet{
     std::string provider = "GORILLA_MONKEY_INC";
     float balance = 1000.0;
-    CryptoCurrency curr = CryptoCurrency::BITCOIN;
+    Currency curr = Currency::BTC;
 };
 
 struct BankAccount{
     std::string provider = "GORILLA_MONKEY_INC";
     float balance = 1000.0;
-    FiatCurrency curr = FiatCurrency::EUR;
+    Currency curr = Currency::EUR;
 };
 
 struct Message{
@@ -45,7 +57,7 @@ struct Message{
 
 class User {
 public:
-    User() : balance(0) {};
+    User() = default; 
     User(std::string id, std::string password);
 
     void update_wallet(bool subract, double amount);
@@ -54,12 +66,14 @@ public:
     //Getters
     std::string get_id() const { return this->id; }
     std::string get_password() const { return this->password_hash; }
+    double get_balance() const { return this->balance; }
     Wallet get_wallet() const { return this->wallet; }
     BankAccount get_bank_account() const { return this->bank_account; }
     std::vector<Message> get_messages() const { return this->messages; }
 
     //Setters
     void set_id(std::string id) { this->id = id; }
+    void set_balance(double ammount) { (ammount > 0) ? this->balance = ammount : this->balance = 0; }
     void set_password(std::string password) { this->password_hash = password; }
     void set_wallet(Wallet wallet) { this->wallet = wallet; }
     void set_bank_account(BankAccount ba) { this->bank_account = ba; }
@@ -68,7 +82,7 @@ public:
 private:
     std::string id; 
     std::string password_hash;
-    double balance;
+    double balance = 0;
     Wallet wallet;
     BankAccount bank_account;
     std::vector<Message> messages;
