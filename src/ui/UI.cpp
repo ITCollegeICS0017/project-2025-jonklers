@@ -107,7 +107,7 @@ void UI::mainMenu() {
     auto myListingsItem = std::make_shared<MenuItem>("My Listings", [] {});
     auto myHistory = std::make_shared<MenuItem>("My History", [] {});
 
-    profileItem->items = {walletItem, bankItem, myListingsItem};
+    profileItem->items = {walletItem, bankItem, myListingsItem, myHistory};
 
     auto menu = std::make_shared<Menu>(std::make_shared<MenuItem>("mainMenu", std::vector<std::shared_ptr<MenuItem>> {
         listingsItem,
