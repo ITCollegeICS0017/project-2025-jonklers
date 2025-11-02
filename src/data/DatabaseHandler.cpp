@@ -13,20 +13,7 @@
 
 
 DatabaseHandler::DatabaseHandler() : check_expiry(true), worker(&DatabaseHandler::loop, this){
-  usr_filepath = "storage/users.json";
-  lst_filepath = "storage/listings.json";
-  archive_filepath = "storage/archive.json";
-  create_files();
-  load_all_listings();
-}
-DatabaseHandler::DatabaseHandler(std::string usr_fp, std::string lst_file) {
-    std::filesystem::path user_path(usr_fp);
-    std::filesystem::path listing_path(lst_file);
-
-    if(!std::filesystem::exists(user_path) || !std::filesystem::exists(listing_path)) throw std::runtime_error("Database error: Invalid file paths!");
-    if(!std::filesystem::is_regular_file(user_path) || !std::filesystem::is_regular_file(listing_path)) throw std::runtime_error("Database error: Supplied arguments are not regular files!");
-    usr_filepath = usr_fp;
-    lst_filepath = lst_file;
+    create_files();
     load_all_listings();
 }
 
@@ -231,15 +218,20 @@ std::vector<std::shared_ptr<Listing>> DatabaseHandler::get_own_archived() {
 }
 
 void DatabaseHandler::create_files() {
-    if((std::filesystem::exists(usr_filepath) && std::filesystem::exists(lst_filepath) && std::filesystem::exists(archive_filepath))) return;
-    std::filesystem::create_directories("storage");
-    std::ofstream file(usr_filepath);
-    file << "{}";
-    file.close();
-    std::ofstream file2(lst_filepath);
-    file2 << "{}";
-    file2.close();
-    std::ofstream file3(archive_filepath);
-    file3 << "{}";
-    file3.close();
+    if(!(std::filesystem::exists(dir) && std::filesystem::is_directory(dir))) std::filesystem::create_directories(dir);
+    if(!std::filesystem::exists(usr_filepath)) {
+        std::ofstream file(usr_filepath);
+        file << "{}";
+        file.close();
+    }
+    if(!std::filesystem::exists(lst_filepath)) {
+        std::ofstream file2(lst_filepath);
+        file2 << "{}";
+        file2.close();
+    }
+    if(!std::filesystem::exists(archive_filepath)) {
+        std::ofstream file3(archive_filepath);
+        file3 << "{}";
+        file3.close();
+    }
 }
