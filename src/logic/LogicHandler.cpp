@@ -146,10 +146,12 @@ bool LogicHandler::recharge_balance(std::string method, double amount) {
     if(method == "Wallet") {
         u.update_wallet(true, amount);
         u.update_balance(false, to_gorilla_coin(u.get_wallet().curr, amount));
+        db.update_usr(u);
         return true;
     }else if(method == "BankAccount") {
         u.update_bank_account(true, amount);
         u.update_balance(false, to_gorilla_coin(u.get_bank_account().curr, amount));
+        db.update_usr(u);
         return true;
     }else return false;
 }

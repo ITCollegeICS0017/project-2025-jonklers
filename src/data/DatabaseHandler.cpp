@@ -223,12 +223,12 @@ void DatabaseHandler::create_files() {
         file << "{}";
         file.close();
     }
-    if(!std::filesystem::exists(lst_filepath)) {
+    if(!std::filesystem::exists(lst_filepath) || !std::filesystem::exists(usr_filepath)) {
         std::ofstream file2(lst_filepath);
         file2 << "{}";
         file2.close();
     }
-    if(!std::filesystem::exists(archive_filepath)) {
+    if(!std::filesystem::exists(archive_filepath) || !std::filesystem::exists(usr_filepath)) {
         std::ofstream file3(archive_filepath);
         file3 << "{}";
         file3.close();
