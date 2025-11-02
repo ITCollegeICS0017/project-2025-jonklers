@@ -12,7 +12,7 @@ void to_json(nlohmann::json& j, const Wallet& w) {
     j = {
            {"provider", w.provider}, 
            {"w_balance", w.balance}, 
-           {"currency", w.curr}
+           {"currency", CurrencyToString(w.curr)}
     };
 }
 
@@ -26,7 +26,7 @@ void to_json(nlohmann::json& j, const BankAccount& b) {
     j = {
            {"provider", b.provider}, 
            {"b_balance", b.balance}, 
-           {"currency", b.curr}
+           {"currency", CurrencyToString(b.curr)}
     };
 }
 
