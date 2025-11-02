@@ -105,6 +105,7 @@ void UI::mainMenu() {
     auto myBalance = std::make_shared<MenuItem>("My Balance", [] {});
     auto myListingsItem = std::make_shared<MenuItem>("My Listings", [] {});
     auto myHistory = std::make_shared<MenuItem>("My History", [] {});
+    auto deleteAccount = std::make_shared<MenuItem>("Delete Account", [] {});
 
     auto walletItem = std::make_shared<MenuItem>("My Wallet", [this] {walletLeaf();});
     auto bankItem = std::make_shared<MenuItem>("My Bank", [this] {bankLeaf();});
@@ -112,13 +113,15 @@ void UI::mainMenu() {
 
     myBalance->items = {gcItem, walletItem, bankItem};
 
-    profileItem->items = {myBalance, myListingsItem, myHistory};
+    profileItem->items = {myBalance, myListingsItem, myHistory, deleteAccount};
 
     auto menu = std::make_shared<Menu>(std::make_shared<MenuItem>("mainMenu", std::vector<std::shared_ptr<MenuItem>> {
         listingsItem,
         messagesItem,
         profileItem,
     }, [] {}));
+
+    deleteAccount->action = [this, menu] {deleteAccountLeaf(menu);};
 
     gcItem->action = [this, gcItem, menu] {addGC(gcItem, menu);};
     gcItem->action();
@@ -137,6 +140,22 @@ void UI::mainMenu() {
 
     menu->run();
 }
+
+void UI::deleteAccountLeaf(std::shared_ptr<Menu> menu) {
+    std::string confirm;
+    std::cout << "Type [confirm] to delete your account: ";
+    std::getline(std::cin, confirm);
+
+    if (confirm == "confirm") {
+        logic.delete_user();
+        menu->exitMenu();
+    }
+    else {
+        std::cout << "Didn't get confirm!\n";
+        wait();
+    }
+}
+
 
 void UI::convertLeaf(std::string method, std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> gcItem) {
     double amount;

@@ -25,6 +25,7 @@ class UI {
     void bidLeaf(std::shared_ptr<Listing> listing, std::shared_ptr<Menu> menu);
     void negotiateLeaf(std::shared_ptr<Listing> listing, std::shared_ptr<Menu> menu);
     void respondLeaf(bool accept, std::shared_ptr<Negotiation> listneg, Offer offer, std::shared_ptr<Menu> menu);
+    void deleteAccountLeaf(std::shared_ptr<Menu> menu);
 
     void addGC(std::shared_ptr<MenuItem> parent, std::shared_ptr<Menu> menu);
     void addListings(std::shared_ptr<Menu> menu, std::shared_ptr<MenuItem> destination, std::shared_ptr<MenuItem> parent, std::vector<std::shared_ptr<Listing>> listings, bool can_create = true);
