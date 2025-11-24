@@ -66,13 +66,18 @@ void UI::bidLeaf(std::shared_ptr<Listing> listing, std::shared_ptr<Menu> menu) {
     std::cin >> price;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-    bool res = logic.place_bid(std::dynamic_pointer_cast<Auction>(listing), price);
-
-    if (res) {
-        std::cout << "Successfully bid on listing.\n";
+    if (!std::cin.fail()) {
+        bool res = logic.place_bid(std::dynamic_pointer_cast<Auction>(listing), price);
+        if (res) {
+            std::cout << "Successfully bid on listing.\n";
+        }
+        else
+            std::cout << "Error bidding on listing.\n";
     }
-    else
-        std::cout << "Error bidding on listing.\n";
+    else {
+        std::cout << "Invalid price input.\n";
+        std::cin.clear();
+    }
     wait();
     menu->keys = {0};
 }
@@ -83,19 +88,21 @@ void UI::negotiateLeaf(std::shared_ptr<Listing> listing, std::shared_ptr<Menu> m
     std::cin >> price;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-    bool res = logic.negotiate(std::dynamic_pointer_cast<Negotiation>(listing), price);
-
-    if (res) {
-        std::cout << "Successfully made offer on listing.\n";
+    if (!std::cin.fail()) {
+        bool res = logic.negotiate(std::dynamic_pointer_cast<Negotiation>(listing), price);
+        if (res) {
+            std::cout << "Successfully made offer on listing.\n";
+        }
+        else
+            std::cout << "Error making offer for listing.\n";
     }
-    else
-        std::cout << "Error making offer for listing.\n";
+    else {
+        std::cout << "Invalid price input.\n";
+        std::cin.clear();
+    }
     wait();
     menu->keys = {0};
 }
-
-
-
 
 void UI::mainMenu() {
     auto listingsItem = std::make_shared<MenuItem>("Listings", [] {});
@@ -162,6 +169,12 @@ void UI::convertLeaf(std::string method, std::shared_ptr<Menu> menu, std::shared
     std::cout << "Enter amount: ";
     std::cin >> amount;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    if (std::cin.fail()) {
+        std::cout << "Invalid amount input." << std::endl;
+        wait();
+        return;
+    }
 
     auto w = logic.get_current_user().get_wallet();
     auto b = logic.get_current_user().get_bank_account();
@@ -250,12 +263,16 @@ void UI::createListingLeaf(std::string type, Category category) {
     std::cin >> price;
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-    if (price > 0 && !name.empty()) {
-        logic.create_listing(type, name, description, category, price);
-        std::cout << "Successfully created listing." << std::endl;
-    } else {
-        std::cout << "Error while createing listing.\nMake sure to have non-empty name, price > 0\n";
+    if (!std::cin.fail()) {
+        if (price > 0 && !name.empty()) {
+            logic.create_listing(type, name, description, category, price);
+            std::cout << "Successfully created listing." << std::endl;
+        } else {
+            std::cout << "Error while createing listing.\nMake sure to have non-empty name, price > 0\n";
+        }
     }
+    else
+        std::cout << "Invalid amount input." << std::endl;
 
     wait();
 }
