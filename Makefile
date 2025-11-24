@@ -1,12 +1,30 @@
-CC=gcc
-CFLAGS=-Wall -Wextra -Werror -std=c11
-SRC=$(wildcard src/*.c)
-OBJ=$(SRC:.c=.o)
-BIN=app
+
+CC=g++
+
+DEBUGFLAGS=-g -O0
+RELEASEFLAGS=-O2
+CFLAGS=-lcrypto -Wall -Wextra -std=c++17 $(DEBUGFLAGS)
+
+# Find all .cpp files recursively under src
+SRC:=$(shell find src -name '*.cpp')
+# Map src/<path>.cpp -> build/<path>.o
+OBJ=$(patsubst src/%.cpp,build/%.o,$(SRC))
+BIN=build/app
+
+.PHONY: all run test clean
 
 .PHONY: all run test clean
 
 all: $(BIN)
+
+build/%.o: src/%.cpp | build
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+OBJDIRS := $(sort $(dir $(OBJ)))
+
+build:
+	mkdir -p $(OBJDIRS)
 
 $(BIN): $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $^
@@ -18,4 +36,5 @@ test: $(BIN) tests/test_basic.sh
 	bash tests/test_basic.sh
 
 clean:
-	rm -f $(BIN) src/*.o
+	rm -rf build
+	rm storage/*
